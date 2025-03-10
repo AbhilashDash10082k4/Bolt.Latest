@@ -19,6 +19,7 @@ require("dotenv").config();
 
 import ollama from 'ollama'
 import { getSystemPrompt } from './prompts';
+import Groq from 'groq-sdk';
 
 const userPrompts1 = `Project Files:\n\nThe following is a list of all project files and their complete contents that are currently visible and accessible to you.
 \n\neslint.config.js:\n
@@ -60,22 +61,25 @@ const userPrompts2 = `For all designs I ask you to make, have them be beautiful,
 
 const userPrompts3 = `<bolt_running_commands>\n</bolt_running_commands>\n\nCurrent Message:\n\nCreate a chess app for me.\n\nFile Changes:\n\nHere is a list of all files that have been modified since the start of the conversation.\nThis information serves as the true contents of these files!\n\nThe contents include either the full file contents or a diff (when changes are smaller and localized).\n\nUse it to:\n - Understand the latest file modifications\n - Ensure your suggestions build upon the most recent version of the files\n - Make informed decisions about changes\n - Ensure suggestions are compatible with existing code\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - /home/project/.bolt/config.json`
 
-const aiRes = async () => {
-    const response = await ollama.chat({
-        model: 'stable-code',
-        messages: [
-            { role: 'user', content: userPrompts1 } ,
-            { role: 'user', content: userPrompts2} ,
-            { role: 'user', content: userPrompts3},
-            { role: 'system', content: getSystemPrompt()}
-        ],
-        stream: true,
-        // format: "json",
-        options: {temperature: 0}
-    })
-    for await (const part of response) {
-        process.stdout.write(part.message.content)
+
+const groq = new Groq({apiKey: process.env.GROQ_API_KEY});
+async function main() {
+    const chatCompletion = await groq.chat.completions.create({
+        "messages": [{ role: 'user', content: userPrompts1 },
+        { role: 'user', content: userPrompts2 },
+        { role: 'user', content: userPrompts3 },
+        { role: 'system', content: getSystemPrompt() }],
+        "model": "llama-3.3-70b-versatile",
+        "temperature": 1,
+        "max_completion_tokens": 1024,
+        "top_p": 1,
+        "stream": true,
+        "stop": null
+    });
+
+    for await (const chunk of chatCompletion) {
+        process.stdout.write(chunk.choices[0]?.delta?.content || '');
     }
 }
-aiRes();
 
+main();
