@@ -35,7 +35,7 @@ export default function Builder() {
   const location = useLocation();
   const { prompt } = location.state || {};
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
-  const [selectedFile, setSelectedFile] = useState<string | null>('');
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([
     {
       name: "src",
