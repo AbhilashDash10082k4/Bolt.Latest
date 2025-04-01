@@ -11,7 +11,7 @@ function App() {
     <Router>
       <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/builder" element={<Builder/>} />
+      <Route path="/api/builder" element={<Builder/>} />
       </Routes>
     </Router>
   )
