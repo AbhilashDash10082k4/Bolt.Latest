@@ -27,9 +27,11 @@ const PromptBox: React.FC = () => {
         ></textarea>
         <button
           type="submit"
-          className="mt-4 max-w-3/4 bg-gradient-to-r from-blue-700 via-blue-900 to-gray-800 text-cyan-400 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-white/90 transition-colors"
-          
-        > Generate Website</button>
+          className="group mt-4 max-w-3/4 bg-gray-900 text-cyan-400 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2  transition-colors relative shadow-[0px_1px_4px_0px_rgba(255, 255, 255, 0.1)_inset,0px_-1px_2px_0px_rgba(255, 255, 255, 0.1)_inset]"
+        > Generate Website
+        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent h-px w-3/4 mx-auto"></span>
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent blur-sm h-[4px] w-full mx-auto"></span>
+        </button>
       </div>
     </form>
   );

@@ -1,8 +1,15 @@
 import PromptBox from "../components/PromptBox";
 
 const Home = () => {
+  
   return (
-    <div className="w-screen h-dvh bg-gradient-to-b from-gray-900 to-blue-900">
+    <div className="w-screen h-dvh bg-gray-900" 
+    style={{
+        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(6,182,212,0.2) 1px, transparent 0)`,
+        backgroundSize: `8px 8px`,
+        backgroundRepeat: `repeat`,
+      } 
+    }>
     <nav className="text-3xl text-white w-screen h-[50px] bg-transparent pt-10 pl-7 pr-7 font-bold font-mono flex justify-between">
       <div className="">WebAgent</div>
       <div className="flex ">

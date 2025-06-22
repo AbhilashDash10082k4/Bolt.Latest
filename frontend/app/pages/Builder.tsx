@@ -12,10 +12,10 @@
 // export default Builder;
 
 import React from "react";
-import { FormContext } from "../context/FormProvider";
+import { FormContext } from "../context/FormProvider.tsx";
 import { useContext } from "react";
 // import { useNavigate } from "react-router";
-import CodeEditor from "../components/CodeEditor";
+// import CodeEditor from "../components/CodeEditor";
 import { files } from "../lib/file.js";
 import Directory from '../components/Directory.tsx'
 // import { useLocation } from "react-router-dom";
@@ -284,7 +284,7 @@ export default function Builder() {
          <Directory files={files} />
          </div>
         <div className="col-start-2 col-end-4 rounded-2xl">
-          <CodeEditor/>
+          {/* <CodeEditor/> */}
         </div>
       </div>
     </div>
