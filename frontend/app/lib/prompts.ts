@@ -317,13 +317,7 @@ export const userPrompts3 = (prompt: string, templateResponse: string) => {
 \n  - /home/project/.bolt/config.json`
 }
 
-
-//propmt - to tell which code should be in which file, where the code should be executed, what tech stack to use to build th eprompted website, etc..
-
-
 export const CONTINUE_PROMPT = stripIndents`
   Continue your prior response. IMPORTANT: Immediately begin from where you left off without any interruptions.
   Do not repeat any content, including artifact and action tags.
 `;
-
-//Prompt templates are hardcoded in order to respond to user prompt with the appropriate tech stack

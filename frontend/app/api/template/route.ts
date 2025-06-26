@@ -1,14 +1,15 @@
 import { groq } from "../../lib/config";
-import { baseNextPrompt } from "../../lib/default/next";
-import { baseNodePrompt } from "../../lib/default/node";
+// import { baseNextPrompt } from "../../lib/default/next";
+// import { baseNodePrompt } from "../../lib/default/node";
 import { baseReactPrompt } from "../../lib/default/react";
 import { userPrompts2 } from "../../lib/prompts";
 
 export const POST = async (req: Request) => {
   try {
     //take prompt from body, app.post, to recieve the result at the body
-    const prompt = await req.json();
-    console.log("req ", req.body);
+    const body = await req.json();
+    const prompt = body.prompt;
+    if (!prompt) throw new Error("No prompt provided");
 
     // this endpoint will send user req to llm to chk what should be the stack to be preferred
     const chatCompletion = await groq.chat.completions.create({
@@ -17,18 +18,17 @@ export const POST = async (req: Request) => {
         {
           role: "system",
           content:
-            "Based on the user prompts tell that what framework/library will be used to make the website as asked by user. DON'T tell anything EXCEPT REACT, NODE and NEXT. Return ONLY ONE WORD in response",
+            "Return either node or react based on what do you think this project should be. Only return a single word like 'node' or 'react', 'next. Do not return anything extra. Return ONLY ONE WORD in response",
         },
       ],
       model: "gemma2-9b-it",
-      temperature: 0.5,
+      temperature: 0.6,
       max_completion_tokens: 300,
-      // "top_p": 1,
     });
     const answer = chatCompletion.choices[0]?.message?.content;
     console.log("chatCompletion ", chatCompletion);
     console.log("RESPONSE: ", answer);
-    if (answer == "REACT" || "React" || "react") {
+    if (["react", "React", "REACT"].includes(answer?.trim() as string)) {
       return Response.json({
         prompt: [
           userPrompts2,
@@ -37,29 +37,30 @@ export const POST = async (req: Request) => {
         uiPrompt: [baseReactPrompt],
       });
     }
-    if (answer == "NODE" || "Node" || "node") {
-      return Response.json({
-        prompt: [
-          `Project Files:\n\nThe following is a list of all project files and their complete contents that are currently visible and accessible to you ${baseNodePrompt}`,
-        ],
-        uiPrompt: [baseNodePrompt],
-      });
-      return;
-    }
-    if (answer == "NEXT" || "Next" || "next") {
-      return Response.json({
-        prompt: [
-          userPrompts2,
-          `Project Files:\n\nThe following is a list of all project files and their complete contents that are currently visible and accessible to you ${baseNextPrompt}`,
-        ],
-        uiPrompt: [baseNextPrompt],
-      });
-    }
-    if (answer !== "REACT" || "NEXT" || "NODE") {
-      return Response.json({
+    //  if (answer == "NODE" || "Node" || "node") {
+    //   return Response.json({
+    //     prompt: [
+    //       `Project Files:\n\nThe following is a list of all project files and their complete contents that are currently visible and accessible to you ${baseNodePrompt}`,
+    //     ],
+    //     uiPrompt: [baseNodePrompt],
+    //   });
+    // }
+    // if(answer == "NEXT" || "Next" || "next") {
+    //   Response.json({
+    //     prompt: [
+    //       userPrompts2,
+    //       `Project Files:\n\nThe following is a list of all project files and their complete contents that are currently visible and accessible to you ${baseNextPrompt}`,
+    //     ],
+    //     uiPrompt: [baseNextPrompt],
+    //   });
+    //   return;
+    // }
+    return Response.json(
+      {
         message: "Enter the tech stack for ur website",
-      });
-    }
+      },
+      { status: 403 }
+    );
   } catch (error) {
     console.error("Error in POST handler:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });

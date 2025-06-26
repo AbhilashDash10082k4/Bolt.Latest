@@ -1,22 +1,37 @@
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FormContext } from "../context/FormProvider";
+"use client";
+import React, {  useState } from "react";
+// import { FormContext } from "../context/FormProvider";
+import { useRouter } from "next/navigation";
+// import axios from "axios";
 
 const PromptBox: React.FC = () => {
   const [inputPrompt, setInputPrompt] = useState<string>("");
-  // const [prompt, setPrompt] = useState<string>("");
-  const navigate = useNavigate();
 
-  const { setPrompt } = useContext(FormContext);
+  // const { setPrompt, setAiResponse } = useContext(FormContext);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPrompt(inputPrompt);
-    if (inputPrompt.trim()) navigate("/api/builder", { state: { inputPrompt } });
+    if (!inputPrompt.trim()) return;
+    setInputPrompt(inputPrompt);
+    // try {
+    //   const resFromBE = await axios.post("/api/template", {
+    //     prompt: inputPrompt,
+    //   });
+    //   const { uiPrompt } = resFromBE.data
+    //   setAiResponse( uiPrompt[0] );
+      router.push(`/builder?prompt=${encodeURIComponent(inputPrompt)}`);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
-  
+
   return (
-    <form onSubmit={handleSubmit} action='http://localhost:5173/api/builder' method="POST" className="w-[400px] text-xl mr-5">
+    <form
+      onSubmit={handleSubmit}
+      method="POST"
+      className="w-[400px] text-xl mr-5"
+    >
       <div className="py-10 w-[400px] items-center flex flex-col">
         <textarea
           value={inputPrompt}
@@ -28,24 +43,14 @@ const PromptBox: React.FC = () => {
         <button
           type="submit"
           className="group mt-4 max-w-3/4 bg-gray-900 text-cyan-400 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2  transition-colors relative shadow-[0px_1px_4px_0px_rgba(255, 255, 255, 0.1)_inset,0px_-1px_2px_0px_rgba(255, 255, 255, 0.1)_inset]"
-        > Generate Website
-        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent h-px w-3/4 mx-auto"></span>
-        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent blur-sm h-[4px] w-full mx-auto"></span>
+        >
+          {" "}
+          Generate Website
+          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent h-px w-3/4 mx-auto"></span>
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute inset-x-0 bottom-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent blur-sm h-[4px] w-full mx-auto"></span>
         </button>
       </div>
     </form>
   );
 };
 export default PromptBox;
-
-/* interface PromptType {prompt: string, setPrompt: () => void} 
-  const PromptContext = createContext<PromptType>({prompt: "", setPrompt: () => {}})
-  const FormContextProvider = ({children :React.ReactNode}) => {const [prompt, setPrompt] = useState<string>("") return (<PromptContext.Provider value = ({prompt, setPrompt})>{children}</>) }
-  const [input, setInput] = useState<string>("");
-  const {setPrompt} = useContext(PromptContext)
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault; setPrompt(input)}
-  return ( <form value={input} onChange=> {(e) => setInput(e.target.value)}>)
-  const {prompt} = useContext(PromptContext)
-  return (<div>{prompt}</>)
-  <PromptContextProvider><allChildren></allChildren></PromptContextProvider>
-*/
