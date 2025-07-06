@@ -30,7 +30,7 @@ export const POST = async (req: Request) => {
     console.log("RESPONSE: ", answer);
     if (["react", "React", "REACT"].includes(answer?.trim() as string)) {
       return Response.json({
-        prompt: [
+        prompts: [
           userPrompts2,
           `Project Files:\n\nThe following is a list of all project files and their complete contents that are currently visible and accessible to you ${baseReactPrompt}`,
         ],

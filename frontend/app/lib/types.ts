@@ -1,13 +1,31 @@
-type File = {
+// export interface File  {
+//   name: string;
+//   type: "file";
+//   content?: string,
+//   path: string,
+//   items: null
+// };
+// export interface Folder {
+//   name: string;
+//   type: "folder";
+//   path: string,
+//   content?: string
+//   items: (File | Folder)[];
+// };
+// export type FileFolderSystem = File | Folder;
+export interface FileOrFolder {
   name: string;
-  type: "file";
-};
-type Folder = {
-  name: string;
-  type: "folder";
-  items: (File | Folder)[];
-};
-export type FileFolderSystem = File | Folder;
+  type: "file" | "folder";
+  content?: string;
+  children?: FileOrFolder[];
+  isOpen?: boolean;
+  path: string
+}
+
+export interface FileViewerProps {
+  file: FileOrFolder | null;
+  onClose: () => void;
+}
 
 export enum StepType {
   CreateFile,
@@ -26,3 +44,5 @@ export interface Step {
   code?: string;
   path?: string;
 }
+
+export type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
