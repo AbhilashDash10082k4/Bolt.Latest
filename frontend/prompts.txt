@@ -315,3 +315,94 @@ if (step?.type = "create file") {
   originalFiles = [{name: "eslint.config.js", type: "file",path: "", content: "code of the file"}]
 }
 
+const files = {
+  'package.json': {
+    file: {
+      contents: `
+        {
+          "name": "vite-starter",
+          "private": true,
+          "version": "0.0.0",
+          "type": "module",
+          "scripts": {
+            "dev": "vite",
+            "build": "vite build",
+            "preview": "vite preview"
+          },
+          "devDependencies": {
+            "vite": "^4.0.4"
+          }
+        }`,
+    },
+  },
+  'index.html': {
+    file: {
+      contents: `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Vite App</title>
+          </head>
+          <body>
+            <div id="app"></div>
+            <script type="module" src="/src/main.js"></script>
+          </body>
+        </html>`,
+    },
+  },
+};
+
+
+const files = {
+  
+  src: {
+    
+    directory: {
+      
+      'main.js': {
+        
+        file: {
+          contents: `
+            console.log('Hello from WebContainers!')
+          `,
+        },
+      },
+      
+      'main.css': {
+        
+        file: {
+          contents: `
+            body {
+              margin: 0;
+            }
+          `,
+        },
+      },
+    },
+  },
+  
+  'package.json': {
+    
+  },
+  
+  'index.html': {
+    
+  },
+};
+
+fileStructure =
+[
+  {name: src;
+  type: "folder";
+  isOpen?: boolean;
+  path: /src
+  children?: [
+    name: App.tsx
+    path: /src/App.tsx
+    type: file
+  ]
+  }
+]

@@ -17,7 +17,8 @@ import axios from "axios";
 import CodeEditor from "../../components/CodeEditor";
 import PromptBox from "../../components/PromptBox";
 import { FileOrFolder, Step, StepType } from "../../lib/types";
-
+import { useWebContainer } from "../../hooks/useWebContainers";
+import { fileParser } from "../../lib/webContainerFiles";
 
 export default function Builder() {
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
@@ -25,26 +26,28 @@ export default function Builder() {
   const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([]);
   const [selectedFileName, setSelectedFileName] = useState<string>("");
   const [steps, setSteps] = useState<Step[]>([]);
-  
+
   const searchParams = useSearchParams();
 
-  //encoded string
+  //encoded string -todo - store this in db after authenticating user
   const promptQuery = searchParams.get("prompt") as string;
-  
-  // const webContainer = useWebContainer();
 
-  async function backendCall() {
+  const webContainer = useWebContainer();
+  
+
+  useEffect(() => {
+    async function backendCall() {
     try {
       const response = await axios.post("/api/template", {
         prompt: promptQuery,
       });
       const { prompts } = response.data;
-            
+
       // const { prompts, uiPrompt } = response.data;
       // const parsedResponse = parseXml(uiPrompt[0]);
       // console.log("parsedResponse ", parsedResponse);
       // setSteps(parsedResponse);
-      
+
       const stepsResponse = await axios.post("/api/chat", {
         prompt: [...prompts, promptQuery].map((content) => ({
           role: "user",
@@ -65,8 +68,6 @@ export default function Builder() {
       console.log(error);
     }
   }
-
-  useEffect(() => {
     if (!promptQuery?.trim()) return;
     console.log("promptQuery value inside useEffect:", promptQuery);
     backendCall();
@@ -126,6 +127,7 @@ export default function Builder() {
 
   useEffect(() => {
     let originalFiles = [...fileStructure]; //opens up the str of files and folders
+
     console.log("originalFiles ", originalFiles); //[]
     console.log("files ", fileStructure);
 
@@ -137,9 +139,9 @@ export default function Builder() {
       updateHappened = true;
       if (step?.type === StepType.CreateFile) {
         let parsedPath = step.path?.split("/") ?? [];
+
         console.log("!parsedPath.length ", !parsedPath.length);
         console.log("parsedPath ", parsedPath);
-
         console.log("originalFiles before the while loop", originalFiles);
 
         let currentFileStructure = [...originalFiles];
@@ -153,17 +155,18 @@ export default function Builder() {
         let currentFolder = "";
 
         while (parsedPath.length) {
-          currentFolder = `${currentFolder}/${parsedPath[0]}`;
+          currentFolder = `${currentFolder}/${parsedPath[0]}`; // /src
           console.log("currentFolder inside loop ", currentFolder);
 
-          const currentFolderName = parsedPath[0];
-          parsedPath = parsedPath.slice(1);
+          const currentFolderName = parsedPath[0]; // src
+          parsedPath = parsedPath.slice(1); // [App.tsx]
           console.log("parsedPath in while loop after slicing ", parsedPath);
           console.log(
             "!parsedPath.length inside while loop ",
             !parsedPath.length
           );
           if (!parsedPath.length) {
+            //false
             // final file
             const file = currentFileStructure.find(
               (x) => x.path === currentFolder
@@ -189,7 +192,7 @@ export default function Builder() {
           } else {
             /// in a folder
             const folder = currentFileStructure.find(
-              (x) => x.path === currentFolder
+              (x) => x.path === currentFolder // /src
             );
             console.log(
               "folder from else loop of the !parsedPath.lenth if loop  ",
@@ -232,12 +235,16 @@ export default function Builder() {
           };
         })
       );
-      console.log(
-        "steps inside the useEffect inside the updateHappened loop ",
-        steps
-      );
     }
   }, [steps, fileStructure]);
+
+  useEffect(() => {
+    async function mountFileInWebContainer() {
+      const mountFiles = await fileParser(fileStructure);
+      await webContainer?.mount(mountFiles);
+    }
+    mountFileInWebContainer();
+  }, [fileStructure, webContainer]);
 
   const toggleFolder = (path: string[]) => {
     const updateFolder = (

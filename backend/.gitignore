@@ -170,5 +170,6 @@ dist
 
 .dev.vars
 .wrangler/
+wrangler.jsonc
 
 generated/prisma/
