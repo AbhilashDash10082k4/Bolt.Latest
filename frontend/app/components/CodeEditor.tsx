@@ -31,10 +31,10 @@ function CodeEditor({content}: ContentProps) {
     editor.focus();
   }
   return (
-    <div className="w-full min-h-screen flex justify-end items-center">
+    <div className="w-full h-dvh flex justify-end items-center">
       <Editor
         defaultLanguage="typescript"
-        height="100vh"
+        height="100%"
         width="100%"
         theme="vs-dark"
         className="rounded-2xl"

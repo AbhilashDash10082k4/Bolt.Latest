@@ -1,4 +1,5 @@
 import { groq } from "../../lib/config";
+// import prisma from "../../lib/prisma";
 import { getSystemPrompt } from "../../lib/prompts";
 export const POST = async (req: Request) => {
   try {
@@ -8,7 +9,7 @@ export const POST = async (req: Request) => {
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "system", content: getSystemPrompt() }, ...prompt], //...prompt: {role: "user", content:""}...
-      model: "",//llama-3.3-70b-versatile
+      model: "llama-3.3-70b-versatile",//llama-3.3-70b-versatile
       temperature: 1,
       max_completion_tokens: 8192,
       // "top_p": 1,

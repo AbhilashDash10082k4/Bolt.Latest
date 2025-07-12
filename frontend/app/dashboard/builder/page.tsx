@@ -1,79 +1,130 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// import CodeEditor from "../components/CodeEditor";
 import {
-  Code2,
-  Play,
-  Folder,
   ChevronDown,
   ChevronRight,
+  Code2,
   FileCode,
   FileText,
+  Folder,
   FolderOpen,
+  Play,
 } from "lucide-react";
 import { parseXml } from "../../lib/parser";
-// import { FormContext } from "../context/FormProvider";
-import { FileOrFolder, Step, StepType } from "../../lib/types";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import CodeEditor from "../../components/CodeEditor";
-import { useWebContainer } from "../../hooks/useWebContainers";
-import { PreviewFrame } from "../../components/Preview";
-import { WebContainer } from "@webcontainer/api";
+import PromptBox from "../../components/PromptBox";
+import { FileOrFolder, Step, StepType } from "../../lib/types";
+
 
 export default function Builder() {
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([]);
-  const [steps, setSteps] = useState<Step[]>([]);
   const [selectedFileName, setSelectedFileName] = useState<string>("");
-  // const [path, setPath] = useState("");
-
+  const [steps, setSteps] = useState<Step[]>([]);
+  
   const searchParams = useSearchParams();
-  const promptQuery = searchParams.get("prompt");
-  const webContainer = useWebContainer();
+
+  //encoded string
+  const promptQuery = searchParams.get("prompt") as string;
+  
+  // const webContainer = useWebContainer();
 
   async function backendCall() {
-    const response = await axios.post("/api/template", {
-      prompt: promptQuery,
-    });
-    const { prompts, uiPrompt } = response.data;
-    //prompts- ["", ""]
+    try {
+      const response = await axios.post("/api/template", {
+        prompt: promptQuery,
+      });
+      const { prompts } = response.data;
+            
+      // const { prompts, uiPrompt } = response.data;
+      // const parsedResponse = parseXml(uiPrompt[0]);
+      // console.log("parsedResponse ", parsedResponse);
+      // setSteps(parsedResponse);
+      
+      const stepsResponse = await axios.post("/api/chat", {
+        prompt: [...prompts, promptQuery].map((content) => ({
+          role: "user",
+          content,
+        })),
+      });
+      /* {prompt: [{role: "user", content:"...prompts"}, {role: "user", content:"promptQuery"}]} */
+      const { message } = stepsResponse.data;
+      console.log(parseXml(message));
 
-    const parsedResponse = parseXml(uiPrompt[0]);
-    console.log("parsedResponse ", parsedResponse);
-    setSteps(parsedResponse);
-    const stepsResponse = await axios.post("/api/chat", {
-      prompt: [...prompts, promptQuery].map((content) => ({
-        role: "user",
-        content,
-      })),
-    });
-    /* {prompt: [{role: "user", content:"...prompts"}, {role: "user", content:"promptQuery"}]} */
-    const { message } = stepsResponse.data;
-    console.log(parseXml(message));
-
-    setSteps((s) =>
-      [...s, ...parseXml(message)].map((x) => ({
-        ...x,
-        status: "pending",
-      }))
-    );
+      setSteps((s) =>
+        [...s, ...parseXml(message)].map((x) => ({
+          ...x,
+          status: "pending",
+        }))
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
     if (!promptQuery?.trim()) return;
+    console.log("promptQuery value inside useEffect:", promptQuery);
     backendCall();
   }, [promptQuery]);
 
+  // useEffect(() => {
+  //   const createMountStructure = (
+  //     files: FileOrFolder[]
+  //   ): Record<string, any> => {
+  //     const mountStructure: Record<string, any> = {};
+
+  //     const processFile = (file: FileOrFolder, isRootFolder: boolean) => {
+  //       if (file.type === "folder") {
+  //         // For folders, create a directory entry
+  //         mountStructure[file.name] = {
+  //           directory: file.children
+  //             ? Object.fromEntries(
+  //                 file.children.map((child) => [
+  //                   child.name,
+  //                   processFile(child, false),
+  //                 ])
+  //               )
+  //             : {},
+  //         };
+  //       } else if (file.type === "file") {
+  //         if (isRootFolder) {
+  //           mountStructure[file.name] = {
+  //             file: {
+  //               contents: file.content || "",
+  //             },
+  //           };
+  //         } else {
+  //           // For files, create a file entry with contents
+  //           return {
+  //             file: {
+  //               contents: file.content || "",
+  //             },
+  //           };
+  //         }
+  //       }
+
+  //       return mountStructure[file.name];
+  //     };
+
+  //     // Process each top-level file/folder
+  //     files.forEach((file) => processFile(file, true));
+
+  //     return mountStructure;
+  //   };
+
+  //   const mountStructure = createMountStructure(fileStructure);
+
+  //   // Mount the structure if WebContainer is available
+  //   console.log(mountStructure);
+  //   webContainer?.mount(mountStructure);
+  // }, [fileStructure, webContainer]);
+
   useEffect(() => {
-    // const statusAndPaths = steps.map((step) => [step.status, step.path]);
-    // console.log("statusAndPaths ", statusAndPaths); //[['pending', 'package.json'],['pending', 'postcss.config.js'],['pending', 'tailwind.config.js']]
-
-    // const filePaths = statusAndPaths.map((path) => path[1]?.split("/"));
-    // console.log("filePaths ", filePaths); //[['src', 'vite-env.d.ts'], ['src', 'index.css'], ['tsconfig.app.json']]
-
     let originalFiles = [...fileStructure]; //opens up the str of files and folders
     console.log("originalFiles ", originalFiles); //[]
     console.log("files ", fileStructure);
@@ -90,17 +141,14 @@ export default function Builder() {
         console.log("parsedPath ", parsedPath);
 
         console.log("originalFiles before the while loop", originalFiles);
-        console.log(
-          "originalFiles before the while loop in spread arr format",
-          [...originalFiles]
-        );
+
         let currentFileStructure = [...originalFiles];
         console.log(
           "currentFileStructure before while loop",
           currentFileStructure
         );
         const finalAnswerRef = currentFileStructure;
-        console.log("finalAnswerRef before while loop ", finalAnswerRef);
+        // console.log("finalAnswerRef before while loop ", finalAnswerRef);
 
         let currentFolder = "";
 
@@ -169,14 +217,6 @@ export default function Builder() {
             }
           }
           originalFiles = finalAnswerRef;
-          console.log(
-            "originalFiles = finalAnswerRef; inside the outmost while loop",
-            originalFiles
-          );
-          console.log(
-            "originalFiles = finalAnswerRef; inside the outmost while loop",
-            finalAnswerRef
-          );
         }
       }
     });
@@ -198,58 +238,6 @@ export default function Builder() {
       );
     }
   }, [steps, fileStructure]);
-
-  useEffect(() => {
-    const createMountStructure = (
-      files: FileOrFolder[]
-    ): Record<string, any> => {
-      const mountStructure: Record<string, any> = {};
-
-      const processFile = (file: FileOrFolder, isRootFolder: boolean) => {
-        if (file.type === "folder") {
-          // For folders, create a directory entry
-          mountStructure[file.name] = {
-            directory: file.children
-              ? Object.fromEntries(
-                  file.children.map((child) => [
-                    child.name,
-                    processFile(child, false),
-                  ])
-                )
-              : {},
-          };
-        } else if (file.type === "file") {
-          if (isRootFolder) {
-            mountStructure[file.name] = {
-              file: {
-                contents: file.content || "",
-              },
-            };
-          } else {
-            // For files, create a file entry with contents
-            return {
-              file: {
-                contents: file.content || "",
-              },
-            };
-          }
-        }
-
-        return mountStructure[file.name];
-      };
-
-      // Process each top-level file/folder
-      files.forEach((file) => processFile(file, true));
-
-      return mountStructure;
-    };
-
-    const mountStructure = createMountStructure(fileStructure);
-
-    // Mount the structure if WebContainer is available
-    console.log(mountStructure);
-    webContainer?.mount(mountStructure);
-  }, [fileStructure, webContainer]);
 
   const toggleFolder = (path: string[]) => {
     const updateFolder = (
@@ -356,7 +344,7 @@ export default function Builder() {
 
   return (
     <div className="min-h-screen bg-zinc-900 text-white w-full">
-      <nav className="text-2xl text-white w-full p-7 font-bold border-b-[1px] border-zinc-700 flex justify-between">
+      <nav className="text-2xl text-white w-full p-4 font-bold border-b-[1px] border-zinc-700 flex justify-between">
         <div className="">AI SDE</div>
         <div className="flex gap-20">
           <div>Login</div>
@@ -364,40 +352,46 @@ export default function Builder() {
         </div>
       </nav>
       {/* Steps Sidebar */}
-      <div className="grid grid-cols-7 pt-3">
-        <div className="w-64 bg-zinc-900 p-4 flex flex-col col-span-2">
-          <h2 className="text-xl font-bold mb-6 text-white">Build Steps</h2>
-          <div className="space-y-3">
-            {steps.map((step, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/50 border border-zinc-700/50"
-              >
-                <div className="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-sm font-medium text-white flex-shrink-0">
-                  {index + 1}
-                </div>
-                <span className="text-sm text-gray-200">{step.title}</span>
+      <div className="grid grid-cols-7 pt-3 bg-zinc-900">
+        <div className="flex flex-col col-span-2 relative px-10">
+          <h2 className="text-xl font-bold mb-6 text-zinc-300">Build Steps</h2>
+          <div className="w-full overflow-y-scroll no-scrollbar">
+            <div className="flex-1 ">
+              <div className="space-y-3 h-[calc(100vh-450px)]">
+                {steps.map((step, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/50 border border-zinc-400/50"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-sm font-medium text-white flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <span className="text-sm text-gray-200">{step.title}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+          </div>
+          <div className="w-full flex absolute bottom-0 left-0">
+            <PromptBox />
           </div>
         </div>
-
         {/* Main Content */}
-        <div className="flex-1 flex flex-col col-span-5 ">
+        <div className="flex-1 flex flex-col col-span-5">
           {/* File Explorer and Preview */}
           <div className="flex-1 flex">
             {/* File Explorer */}
 
             {/* Code/Preview Area */}
-            
-              <div className="flex-1 flex flex-col">
+
+            <div className="flex-1 flex flex-col">
               <div className="border-[1px] border-zinc-700 px-4 bg-zinc-900 ">
                 <div className="flex gap-6 ">
                   <button
                     onClick={() => setActiveTab("code")}
                     className={`flex items-center gap-2 py-4 border-b-2 transition-colors ${
                       activeTab === "code"
-                        ? "border-purple-500 text-purple-400"
+                        ? "border-cyan-400 text-cyan-400"
                         : "border-transparent text-gray-400 hover:text-gray-300"
                     }`}
                   >
@@ -408,7 +402,7 @@ export default function Builder() {
                     onClick={() => setActiveTab("preview")}
                     className={`flex items-center gap-2 py-4 border-b-2 transition-colors ${
                       activeTab === "preview"
-                        ? "border-purple-500 text-purple-400"
+                        ? "border-cyan-400 text-cyan-400"
                         : "border-transparent text-gray-400 hover:text-gray-300"
                     }`}
                   >
@@ -417,12 +411,12 @@ export default function Builder() {
                   </button>
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden ">
+              <div className="flex-1 ">
                 {activeTab === "code" ? (
-                  <div className="h-full flex flex-col ">
-                    <div className="h-full overflow-auto bg-zinc-900 text-sm leading-relaxed grid grid-cols-5 ">
-                      <div className="w-80 bg-zinc-900 border-[1px] border-zinc-700  flex flex-col col-span-1">
-                        <div className=" border-b border-zinc-700 p-3">
+                  <div className="flex flex-col flex-1 h-[calc(100vh-160px)]">
+                    <div className="text-sm leading-relaxed grid grid-cols-5 border-[1px] border-zinc-700 overflow-hidden">
+                      <div className=" bg-zinc-900 border-[1px] border-zinc-700  flex flex-col col-span-1">
+                        <div className=" border-b border-zinc-700 p-3 flex-shrink-0">
                           <span>Files</span>
                         </div>
                         <div className="flex-1 overflow-y-auto">
@@ -431,7 +425,7 @@ export default function Builder() {
                           </div>
                         </div>
                       </div>
-                      <div className="col-span-4">
+                      <div className="col-span-4 border-[1px] border-zinc-700 w-full h-full">
                         <CodeEditor
                           content={
                             selectedFile || "// Select a file from the explorer"
@@ -441,13 +435,8 @@ export default function Builder() {
                     </div>
                   </div>
                 ) : (
-                  <div className="h-full flex items-center justify-center bg-gray-850">
-                    <div className="text-center">
-                      <PreviewFrame
-                        webContainer={webContainer}
-                        files={fileStructure}
-                      />
-                    </div>
+                  <div className="h-[calc(100vh-160px)] flex items-center justify-center bg-gray-850 border-[1px] border-zinc-700">
+                    <div className="text-center"></div>
                   </div>
                 )}
               </div>

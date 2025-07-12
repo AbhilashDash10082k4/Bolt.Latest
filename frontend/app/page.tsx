@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import PromptBox from "./components/PromptBox";
-import { Navbar } from "./components/Navbar";
+import Navbar from "./components/Navbar";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);

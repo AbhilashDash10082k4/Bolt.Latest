@@ -21,7 +21,7 @@ export const POST = async (req: Request) => {
             "Return either node or react based on what do you think this project should be. Only return a single word like 'node' or 'react', 'next. Do not return anything extra. Return ONLY ONE WORD in response",
         },
       ],
-      model: "gemma2-9b-it",
+      model: "llama-3.3-70b-versatile",//gemma2-9b-it
       temperature: 0.6,
       max_completion_tokens: 300,
     });

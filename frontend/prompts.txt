@@ -133,4 +133,185 @@ export const basePrompt = `<boltArtifact id=\"project-import\" title=\"Project F
 
 
 
-<boltArtifact id="nextjs-project-template" title="Next.js Project Files"><boltAction type="file" filePath="package.json">{\n  "name": "nextjs-typescript-starter",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "dev": "next dev",\n    "build": "next build",\n    "start": "next start",\n    "lint": "next lint",\n    "type-check": "tsc --noEmit"\n  },\n  "dependencies": {\n    "next": "^14.0.0",\n    "react": "^18.2.0",\n    "react-dom": "^18.2.0",\n    "lucide-react": "^0.344.0"\n  },\n  "devDependencies": {\n    "@types/node": "^20.0.0",\n    "@types/react": "^18.2.0",\n    "@types/react-dom": "^18.2.0",\n    "@typescript-eslint/eslint-plugin": "^6.0.0",\n    "@typescript-eslint/parser": "^6.0.0",\n    "autoprefixer": "^10.4.16",\n    "eslint": "^8.0.0",\n    "eslint-config-next": "^14.0.0",\n    "postcss": "^8.4.31",\n    "tailwindcss": "^3.3.0",\n    "typescript": "^5.0.0"\n  }\n}\n</boltAction><boltAction type="file" filePath="next.config.js">/** @type {import('next').NextConfig} */\nconst nextConfig = {\n  experimental: {\n    appDir: true,\n  },\n  images: {\n    domains: [],\n  },\n};\n\nmodule.exports = nextConfig;\n</boltAction><boltAction type="file" filePath="tsconfig.json">{\n  "compilerOptions": {\n    "lib": ["dom", "dom.iterable", "es6"],\n    "allowJs": true,\n    "skipLibCheck": true,\n    "strict": true,\n    "noEmit": true,\n    "esModuleInterop": true,\n    "module": "esnext",\n    "moduleResolution": "bundler",\n    "resolveJsonModule": true,\n    "isolatedModules": true,\n    "jsx": "preserve",\n    "incremental": true,\n    "plugins": [\n      {\n        "name": "next"\n      }\n    ],\n    "baseUrl": ".",\n    "paths": {\n      "@/*": ["./src/*"]\n    }\n  },\n  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],\n  "exclude": ["node_modules"]\n}\n</boltAction><boltAction type="file" filePath="tailwind.config.js">/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\n    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',\n    './src/components/**/*.{js,ts,jsx,tsx,mdx}',\n    './src/app/**/*.{js,ts,jsx,tsx,mdx}',\n  ],\n  theme: {\n    extend: {\n      backgroundImage: {\n        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',\n        'gradient-conic':\n          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',\n      },\n    },\n  },\n  plugins: [],\n}\n</boltAction><boltAction type="file" filePath="postcss.config.js">module.exports = {\n  plugins: {\n    tailwindcss: {},\n    autoprefixer: {},\n  },\n}\n</boltAction><boltAction type="file" filePath=".eslintrc.json">{\n  "extends": [\n    "next/core-web-vitals",\n    "@typescript-eslint/recommended"\n  ],\n  "parser": "@typescript-eslint/parser",\n  "plugins": ["@typescript-eslint"],\n  "rules": {\n    "@typescript-eslint/no-unused-vars": "error",\n    "@typescript-eslint/no-explicit-any": "warn"\n  }\n}\n</boltAction><boltAction type="file" filePath="next-env.d.ts">/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/basic-features/typescript for more information.\n</boltAction><boltAction type="file" filePath="src/app/layout.tsx">import type { Metadata } from 'next'\nimport { Inter } from 'next/font/google'\nimport './globals.css'\n\nconst inter = Inter({ subsets: ['latin'] })\n\nexport const metadata: Metadata = {\n  title: 'Next.js TypeScript Starter',\n  description: 'A modern Next.js application with TypeScript and Tailwind CSS',\n}\n\nexport default function RootLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {\n  return (\n    <html lang=\"en\">\n      <body className={inter.className}>{children}</body>\n    </html>\n  )\n}\n</boltAction><boltAction type="file" filePath="src/app/page.tsx">import React from 'react';\n\nexport default function Home() {\n  return (\n    <main className=\"min-h-screen bg-gray-100 flex items-center justify-center\">\n      <div className=\"text-center\">\n        <h1 className=\"text-4xl font-bold text-gray-900 mb-4\">\n          Welcome to Next.js!\n        </h1>\n        <p className=\"text-lg text-gray-600\">\n          Start prompting (or editing) to see magic happen :)\n        </p>\n      </div>\n    </main>\n  );\n}\n</boltAction><boltAction type="file" filePath="src/app/globals.css">@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n:root {\n  --foreground-rgb: 0, 0, 0;\n  --background-start-rgb: 214, 219, 220;\n  --background-end-rgb: 255, 255, 255;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --foreground-rgb: 255, 255, 255;\n    --background-start-rgb: 0, 0, 0;\n    --background-end-rgb: 0, 0, 0;\n  }\n}\n\nbody {\n  color: rgb(var(--foreground-rgb));\n  background: linear-gradient(\n      to bottom,\n      transparent,\n      rgb(var(--background-end-rgb))\n    )\n    rgb(var(--background-start-rgb));\n}\n</boltAction><boltAction type="file" filePath="src/components/ui/Button.tsx">import React from 'react';\n\ninterface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n  variant?: 'primary' | 'secondary' | 'outline';\n  size?: 'sm' | 'md' | 'lg';\n  children: React.ReactNode;\n}\n\nexport const Button: React.FC<ButtonProps> = ({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...props\n}) => {\n  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';\n  \n  const variantClasses = {\n    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',\n    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',\n    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500',\n  };\n  \n  const sizeClasses = {\n    sm: 'px-3 py-1.5 text-sm',\n    md: 'px-4 py-2 text-base',\n    lg: 'px-6 py-3 text-lg',\n  };\n\n  return (\n    <button\n      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}\n      {...props}\n    >\n      {children}\n    </button>\n  );\n};\n</boltAction><boltAction type="file" filePath="src/lib/utils.ts">import { type ClassValue, clsx } from 'clsx';\n\nexport function cn(...inputs: ClassValue[]) {\n  return clsx(inputs);\n}\n\nexport function formatDate(date: Date): string {\n  return new Intl.DateTimeFormat('en-US', {\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric',\n  }).format(date);\n}\n\nexport function capitalize(str: string): string {\n  return str.charAt(0).toUpperCase() + str.slice(1);\n}\n</boltAction><boltAction type="file" filePath="README.md"># Next.js TypeScript Starter\n\nA modern Next.js application template with TypeScript and Tailwind CSS.\n\n## Getting Started\n\nFirst, install the dependencies:\n\n```bash\nnpm install\n# or\nyarn install\n# or\npnpm install\n```\n\nThen, run the development server:\n\n```bash\nnpm run dev\n# or\nyarn dev\n# or\npnpm dev\n```\n\nOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.\n\n## Features\n\n- **Next.js 14** with App Router\n- **TypeScript** for type safety\n- **Tailwind CSS** for styling\n- **ESLint** for code linting\n- **Lucide React** for icons\n- Pre-configured UI components\n- Utility functions\n\n## Project Structure\n\n```\nsrc/\n├── app/\n│   ├── globals.css\n│   ├── layout.tsx\n│   └── page.tsx\n├── components/\n│   └── ui/\n│       └── Button.tsx\n└── lib/\n    └── utils.ts\n```\n\n## Learn More\n\nTo learn more about Next.js, take a look at the following resources:\n\n- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.\n- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.\n\n## Deploy on Vercel\n\nThe easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.\n</boltAction><bolt
+<boltArtifact id="nextjs-project-template" title="Next.js Project Files"><boltAction type="file" filePath="package.json">{\n  "name": "nextjs-typescript-starter",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "dev": "next dev",\n    "build": "next build",\n    "start": "next start",\n    "lint": "next lint",\n    "type-check": "tsc --noEmit"\n  },\n  "dependencies": {\n    "next": "^14.0.0",\n    "react": "^18.2.0",\n    "react-dom": "^18.2.0",\n    "lucide-react": "^0.344.0"\n  },\n  "devDependencies": {\n    "@types/node": "^20.0.0",\n    "@types/react": "^18.2.0",\n    "@types/react-dom": "^18.2.0",\n    "@typescript-eslint/eslint-plugin": "^6.0.0",\n    "@typescript-eslint/parser": "^6.0.0",\n    "autoprefixer": "^10.4.16",\n    "eslint": "^8.0.0",\n    "eslint-config-next": "^14.0.0",\n    "postcss": "^8.4.31",\n    "tailwindcss": "^3.3.0",\n    "typescript": "^5.0.0"\n  }\n}\n</boltAction><boltAction type="file" filePath="next.config.js">/** @type {import('next').NextConfig} */\nconst nextConfig = {\n  experimental: {\n    appDir: true,\n  },\n  images: {\n    domains: [],\n  },\n};\n\nmodule.exports = nextConfig;\n</boltAction><boltAction type="file" filePath="tsconfig.json">{\n  "compilerOptions": {\n    "lib": ["dom", "dom.iterable", "es6"],\n    "allowJs": true,\n    "skipLibCheck": true,\n    "strict": true,\n    "noEmit": true,\n    "esModuleInterop": true,\n    "module": "esnext",\n    "moduleResolution": "bundler",\n    "resolveJsonModule": true,\n    "isolatedModules": true,\n    "jsx": "preserve",\n    "incremental": true,\n    "plugins": [\n      {\n        "name": "next"\n      }\n    ],\n    "baseUrl": ".",\n    "paths": {\n      "@/*": ["./src/*"]\n    }\n  },\n  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],\n  "exclude": ["node_modules"]\n}\n</boltAction><boltAction type="file" filePath="tailwind.config.js">/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\n    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',\n    './src/components/**/*.{js,ts,jsx,tsx,mdx}',\n    './src/app/**/*.{js,ts,jsx,tsx,mdx}',\n  ],\n  theme: {\n    extend: {\n      backgroundImage: {\n        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',\n        'gradient-conic':\n          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',\n      },\n    },\n  },\n  plugins: [],\n}\n</boltAction><boltAction type="file" filePath="postcss.config.js">module.exports = {\n  plugins: {\n    tailwindcss: {},\n    autoprefixer: {},\n  },\n}\n</boltAction><boltAction type="file" filePath=".eslintrc.json">{\n  "extends": [\n    "next/core-web-vitals",\n    "@typescript-eslint/recommended"\n  ],\n  "parser": "@typescript-eslint/parser",\n  "plugins": ["@typescript-eslint"],\n  "rules": {\n    "@typescript-eslint/no-unused-vars": "error",\n    "@typescript-eslint/no-explicit-any": "warn"\n  }\n}\n</boltAction><boltAction type="file" filePath="next-env.d.ts">/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/basic-features/typescript for more information.\n</boltAction><boltAction type="file" filePath="src/app/layout.tsx">import type { Metadata } from 'next'\nimport { Inter } from 'next/font/google'\nimport './globals.css'\n\nconst inter = Inter({ subsets: ['latin'] })\n\nexport const metadata: Metadata = {\n  title: 'Next.js TypeScript Starter',\n  description: 'A modern Next.js application with TypeScript and Tailwind CSS',\n}\n\nexport default function RootLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {\n  return (\n    <html lang=\"en\">\n      <body className={inter.className}>{children}</body>\n    </html>\n  )\n}\n</boltAction><boltAction type="file" filePath="src/app/page.tsx">import React from 'react';\n\nexport default function Home() {\n  return (\n    <main className=\"min-h-screen bg-gray-100 flex items-center justify-center\">\n      <div className=\"text-center\">\n        <h1 className=\"text-4xl font-bold text-gray-900 mb-4\">\n          Welcome to Next.js!\n        </h1>\n        <p className=\"text-lg text-gray-600\">\n          Start prompting (or editing) to see magic happen :)\n        </p>\n      </div>\n    </main>\n  );\n}\n</boltAction><boltAction type="file" filePath="src/app/globals.css">@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n:root {\n  --foreground-rgb: 0, 0, 0;\n  --background-start-rgb: 214, 219, 220;\n  --background-end-rgb: 255, 255, 255;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --foreground-rgb: 255, 255, 255;\n    --background-start-rgb: 0, 0, 0;\n    --background-end-rgb: 0, 0, 0;\n  }\n}\n\nbody {\n  color: rgb(var(--foreground-rgb));\n  background: linear-gradient(\n      to bottom,\n      transparent,\n      rgb(var(--background-end-rgb))\n    )\n    rgb(var(--background-start-rgb));\n}\n</boltAction><boltAction type="file" filePath="src/components/ui/Button.tsx">import React from 'react';\n\ninterface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n  variant?: 'primary' | 'secondary' | 'outline';\n  size?: 'sm' | 'md' | 'lg';\n  children: React.ReactNode;\n}\n\nexport const Button: React.FC<ButtonProps> = ({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...props\n}) => {\n  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';\n  \n  const variantClasses = {\n    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',\n    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',\n    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500',\n  };\n  \n  const sizeClasses = {\n    sm: 'px-3 py-1.5 text-sm',\n    md: 'px-4 py-2 text-base',\n    lg: 'px-6 py-3 text-lg',\n  };\n\n  return (\n    <button\n      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}\n      {...props}\n    >\n      {children}\n    </button>\n  );\n};\n</boltAction><boltAction type="file" filePath="src/lib/utils.ts">import { type ClassValue, clsx } from 'clsx';\n\nexport function cn(...inputs: ClassValue[]) {\n  return clsx(inputs);\n}\n\nexport function formatDate(date: Date): string {\n  return new Intl.DateTimeFormat('en-US', {\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric',\n  }).format(date);\n}\n\nexport function capitalize(str: string): string {\n  return str.charAt(0).toUpperCase() + str.slice(1);\n}\n</boltAction><boltAction type="file" filePath="README.md"># Next.js TypeScript Starter\n\nA modern Next.js application template with TypeScript and Tailwind CSS.\n\n## Getting Started\n\nFirst, install the dependencies:\n\n```bash\nnpm install\n# or\nyarn install\n# or\npnpm install\n```\n\nThen, run the development server:\n\n```bash\nnpm run dev\n# or\nyarn dev\n# or\npnpm dev\n```\n\nOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.\n\n## Features\n\n- **Next.js 14** with App Router\n- **TypeScript** for type safety\n- **Tailwind CSS** for styling\n- **ESLint** for code linting\n- **Lucide React** for icons\n- Pre-configured UI components\n- Utility functions\n\n## Project Structure\n\n```\nsrc/\n├── app/\n│   ├── globals.css\n│   ├── layout.tsx\n│   └── page.tsx\n├── components/\n│   └── ui/\n│       └── Button.tsx\n└── lib/\n    └── utils.ts\n```\n\n## Learn More\n\nTo learn more about Next.js, take a look at the following resources:\n\n- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.\n- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.\n\n## Deploy on Vercel\n\nThe easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.\n</boltAction><bolt/>
+
+
+
+
+
+
+
+
+
+const toggleFolder = (path: string[]) => { //path -["","",""]
+    const updateFolder = (
+      items: FileOrFolder[], 
+      //items = [
+        {
+            name: "",
+            type: "",
+            content: "",
+            isOpen:  bool,
+            path: "", 
+            children:[
+                {
+                    name: "",
+                    type:"",
+                    content:"",
+                    path:"",
+                    isOpen:bool,
+                    children: [
+                        {
+                            ...
+                        }
+                    ]
+                }]
+            }
+        ]
+
+      currentPath: string[] //["","",""]
+
+    ): FileOrFolder[] => {
+
+      return items.map((item) => { 
+        if (item.type === "folder") { //{name: "",type: "folder",content: "",isOpen: bool, path: "", !children}
+
+            [""] = item.name
+          if (currentPath.length === 1 && currentPath[0] === item.name) {
+            // This is the folder we want to toggle
+
+            return { ...item, isOpen: !item.isOpen }; //{name: "",type: "folder",content: "", path: "",isOpen: true <-> false}
+
+          } else if (
+            currentPath.length > 1 && //["",""...]
+            currentPath[0] === item.name && //[name, "",""]
+            item.children // and item has children
+          ) {
+            // We need to go deeper into the folder structure
+            return {
+              ...item,
+              children: updateFolder(item.children, currentPath.slice(1)),
+            };
+
+            //{name: "", type:"", content:"", path:"", isOpen: bool, children:[...]}
+          }
+        }
+        return item; //[{},{}..]
+      });
+    };
+
+    setFileStructure((prevStructure) => updateFolder(prevStructure, path));
+  };
+
+
+
+const [selectedFile, setSelectedFile] = useState<string | null>(null);
+const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([]);
+const [steps, setSteps] = useState<Step[]>([]);
+const [selectedFileName, setSelectedFileName] = useState<string>("");
+
+flows-
+
+backendCall -> takes promptQuery -> template -> {prompts: ["","template files"], uiPrompts:["template files"]} ->
+parseXml - xml -> json by steps.push ->
+parsedResponse -> files to be shown in UI with steps -> 
+chat ep. call -> { prompt: [{role: 'user', content: "UI"}, {role: "user", content: "template"}, {role: "user", content:"userPrompt"}] } -> o/p -> xml string (with the template files) -> parseXML(response) -> the actual code of the app with template files and bolt response format
+
+parseXml(message) ->steps[] ->[{},{},{}...]
+
+steps update -> steps = (parsed response form chat endpoint with code with the same template as of template endpoint) -> [{},{},{}...] -> contains info about folders, files, codes, steps
+
+interface FileOrFolder {
+  name: string;
+  type: "file" | "folder";
+  content?: string;
+  children?: FileOrFolder[];
+  isOpen?: boolean;
+  path: string
+} -> fileStructure
+
+interface Step {
+  id: number;
+  title: string;
+  description: string;
+  type: StepType;
+  status: 'pending' | 'in-progress' | 'completed';
+  code?: string;
+  path?: string;
+}
+enum StepType {
+  CreateFile, 0
+  CreateFolder, 1
+  EditFile, 2
+  DeleteFile, 3
+  RunScript 4
+}
+
+const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([]);
+fileStructure = []
+
+originalFiles = [{}, {}, {}...] -basic str
+initially - []
+
+pending steps -[
+  {id: 1, title: 'Project Files', description: '', type: 1, status: 'pending'},
+  {id: 2, title: 'Create eslint.config.js', description: '', type: 0, status: 'pending'},
+  {id: 3, title: 'Create index.html', description: '', type: 0, status: 'pending'},
+  {id: 4, title: 'Create package.json', description: '', type: 0, status: 'pending'},
+  {id: 5, title: 'Create postcss.config.js', description: '', type: 0, status: 'pending'},
+  {id: 6, title: 'Create tailwind.config.js', description: '', type: 0, status: 'pending'},
+  {id: 7, title: 'Create tsconfig.app.json', description: '', type: 0, status: 'pending'},
+  {id: 8, title: 'Create tsconfig.json', description: '', type: 0, status: 'pending'},
+  {id: 9, title: 'Create tsconfig.node.json', description: '', type: 0, status: 'pending'},
+  {id: 10, title: 'Create vite.config.ts', description: '', type: 0, status: 'pending'},
+  {id: 11, title: 'Create src/App.tsx', description: '', type: 0, status: 'pending'},
+  {id: 12, title: 'Create src/index.css', description: '', type: 0, status: 'pending'},
+  {id: 13, title: 'Create src/main.tsx', description: '', type: 0, status: 'pending'},
+  {
+    id: 14,
+    title: 'Create src/vite-env.d.ts',
+    description: '',
+    type: 0,
+    status: 'pending',
+    code: '/// <reference types="vite/client" />',
+    path: 'src/vite-env.d.ts'
+  }
+]
+pendingSteps.map ->  har ek item k liye ->
+updateHappened = true
+if (step?.type = "create file") {
+
+  parsedPath = [ 'eslint.config.js' ]
+  
+  currentFileStructure = [] //initially []
+  finalAnswerRef = [] //finalAnswerRef = currentFileStructure
+
+  let currentFolder = "";
+
+  while(the parsedPath arr is not empty) {
+    currentFolder = '/eslint.config.js'
+    currentFolderName = "eslint.config.js" //parsedPath[0] -mostly wil have a folder
+    parsedPath = parsedPath.slice(1); // []
+
+    if( 0=> true, any  number => false ) {
+       const file = undefined 
+       //file type = { FileOrFolder }
+
+       if( !file = true(1) ){
+        currentFileStructure = [{name: "eslint.config.js", type: "file",path: "", content: "code of the file"}]
+       }
+    } else {
+      //if the file already exists it will set the file content to step code
+    }
+  }else {
+    const folder = undefined 
+    //initially empty. folder type = { FileOrFolder }
+
+    if(!folder = false(1) ) {
+      currentFileStructure = [{..., type: "folder"}]
+
+    }
+  }
+  originalFiles = [{name: "eslint.config.js", type: "file",path: "", content: "code of the file"}]
+}
+
