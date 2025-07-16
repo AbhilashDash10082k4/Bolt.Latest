@@ -16,9 +16,9 @@ export function StepsList({ steps, currentStep, onStepClick }: StepsListProps) {
       <div className="w-full overflow-y-scroll no-scrollbar">
         <div className="flex-1 ">
           <div className="space-y-3 h-[calc(100vh-450px)]">
-            {steps.map((step) => (
+            {steps.map((step, index) => (
               <div
-                key={step.id}
+                key={index}
                 className={`p-1 rounded-lg cursor-pointer transition-colors ${
                   currentStep === step.id
                     ? "bg-gray-800 border border-gray-700"

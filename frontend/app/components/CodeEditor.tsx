@@ -42,7 +42,7 @@ function CodeEditor({content}: ContentProps) {
         onMount={handleEditorDidMount}
         options={{
           minimap: { enabled: false },
-          scrollBeyondLastLine: false,
+          scrollBeyondLastLine: true,
           fontSize: 14,
         }}
       />
