@@ -15,128 +15,74 @@ import { parseXml } from "../../lib/parser";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import CodeEditor from "../../components/CodeEditor";
-import PromptBox from "../../components/PromptBox";
 import { FileOrFolder, Step, StepType } from "../../lib/types";
-import { useWebContainer } from "../../hooks/useWebContainers";
-import { fileParser } from "../../lib/webContainerFiles";
+// import { useWebContainer } from "../../hooks/useWebContainers";
+// import { fileParser } from "../../lib/webContainerFiles";
+// import { WebContainer } from "@webcontainer/api";
+import { PreviewFrame } from "../../components/Preview";
+import { StepsList } from "../../components/StepList";
+// import { useIframeUrl } from "../../hooks/useIframeUrl";
 
 export default function Builder() {
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([]);
   const [selectedFileName, setSelectedFileName] = useState<string>("");
-  const [steps, setSteps] = useState<Step[]>([]);
-
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [currentStep, setCuurentSteps] = useState(1);
+  const [fileStructure, setFileStructure] = useState<FileOrFolder[]>([]);
 
-  //encoded string -todo - store this in db after authenticating user
   const promptQuery = searchParams.get("prompt") as string;
-
-  const webContainer = useWebContainer();
-  
+  // const webContainer = useWebContainer();
 
   useEffect(() => {
     async function backendCall() {
-    try {
-      const response = await axios.post("/api/template", {
-        prompt: promptQuery,
-      });
-      const { prompts } = response.data;
+      try {
+        const response = await axios.post("/api/template", {
+          prompt: promptQuery,
+        });
 
-      // const { prompts, uiPrompt } = response.data;
-      // const parsedResponse = parseXml(uiPrompt[0]);
-      // console.log("parsedResponse ", parsedResponse);
-      // setSteps(parsedResponse);
+        const { prompts, uiPrompt } = response.data;
+        const parsedResponse = parseXml(uiPrompt[0]);
+        // console.log("parsedResponse ", parsedResponse);
+        setSteps(parsedResponse);
 
-      const stepsResponse = await axios.post("/api/chat", {
-        prompt: [...prompts, promptQuery].map((content) => ({
-          role: "user",
-          content,
-        })),
-      });
-      /* {prompt: [{role: "user", content:"...prompts"}, {role: "user", content:"promptQuery"}]} */
-      const { message } = stepsResponse.data;
-      console.log(parseXml(message));
+        const stepsResponse = await axios.post("/api/chat", {
+          prompt: [...prompts, promptQuery].map((content) => ({
+            role: "user",
+            content,
+          })),
+        });
+        /* {prompt: [{role: "user", content:"...prompts"}, {role: "user", content:"promptQuery"}]} */
+        const { message } = stepsResponse.data;
+        console.log(parseXml(message));
 
-      setSteps((s) =>
-        [...s, ...parseXml(message)].map((x) => ({
-          ...x,
-          status: "pending",
-        }))
-      );
-    } catch (error) {
-      console.log(error);
+        setSteps((s) =>
+          [...s, ...parseXml(message)].map((x) => ({
+            ...x,
+            status: "pending",
+          }))
+        );
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }
     if (!promptQuery?.trim()) return;
     console.log("promptQuery value inside useEffect:", promptQuery);
     backendCall();
   }, [promptQuery]);
 
-  // useEffect(() => {
-  //   const createMountStructure = (
-  //     files: FileOrFolder[]
-  //   ): Record<string, any> => {
-  //     const mountStructure: Record<string, any> = {};
-
-  //     const processFile = (file: FileOrFolder, isRootFolder: boolean) => {
-  //       if (file.type === "folder") {
-  //         // For folders, create a directory entry
-  //         mountStructure[file.name] = {
-  //           directory: file.children
-  //             ? Object.fromEntries(
-  //                 file.children.map((child) => [
-  //                   child.name,
-  //                   processFile(child, false),
-  //                 ])
-  //               )
-  //             : {},
-  //         };
-  //       } else if (file.type === "file") {
-  //         if (isRootFolder) {
-  //           mountStructure[file.name] = {
-  //             file: {
-  //               contents: file.content || "",
-  //             },
-  //           };
-  //         } else {
-  //           // For files, create a file entry with contents
-  //           return {
-  //             file: {
-  //               contents: file.content || "",
-  //             },
-  //           };
-  //         }
-  //       }
-
-  //       return mountStructure[file.name];
-  //     };
-
-  //     // Process each top-level file/folder
-  //     files.forEach((file) => processFile(file, true));
-
-  //     return mountStructure;
-  //   };
-
-  //   const mountStructure = createMountStructure(fileStructure);
-
-  //   // Mount the structure if WebContainer is available
-  //   console.log(mountStructure);
-  //   webContainer?.mount(mountStructure);
-  // }, [fileStructure, webContainer]);
-
   useEffect(() => {
-    let originalFiles = [...fileStructure]; //opens up the str of files and folders
+    let originalFiles = [...fileStructure]; //shallow copy -a new array named originalFiles with the inner elements pointing to same memory. The top level reference creates a new array -pointing to a different memory
 
     console.log("originalFiles ", originalFiles); //[]
     console.log("files ", fileStructure);
 
-    let updateHappened = false;
+    let updateHappened = false; //a flag
     const pendingSteps = steps.filter((item) => item.status === "pending");
-    console.log("pendingSteps ", pendingSteps); //same as parsedSteps
 
     pendingSteps.map((step) => {
-      updateHappened = true;
+      updateHappened = true; //for each item, the flag is true
       if (step?.type === StepType.CreateFile) {
         let parsedPath = step.path?.split("/") ?? [];
 
@@ -144,12 +90,14 @@ export default function Builder() {
         console.log("parsedPath ", parsedPath);
         console.log("originalFiles before the while loop", originalFiles);
 
-        let currentFileStructure = [...originalFiles];
+        let currentFileStructure = [...originalFiles]; // shallow copy of originalFiles, pointing to a differnt memory but inner loop refering to same memory location. Cause of shallow copying -react's shallow comparison for state. React ompares teh initial state of a variable to the final value of its new top level reference. The new top level reference encapsulates the inner changes. Although the change directly happens in the state var, due to another reference, it gets shadowed and only renders when the original var is update with the new reference. The state var is not changed directly as according to react, the initial val and the changed val will be same and teh state will not be different, so teh UI will not re render.
+
         console.log(
           "currentFileStructure before while loop",
           currentFileStructure
         );
-        const finalAnswerRef = currentFileStructure;
+
+        const finalAnswerRef = currentFileStructure; //just another reference to the currentFileStructure. Same top level reference.
         // console.log("finalAnswerRef before while loop ", finalAnswerRef);
 
         let currentFolder = "";
@@ -237,14 +185,6 @@ export default function Builder() {
       );
     }
   }, [steps, fileStructure]);
-
-  useEffect(() => {
-    async function mountFileInWebContainer() {
-      const mountFiles = await fileParser(fileStructure);
-      await webContainer?.mount(mountFiles);
-    }
-    mountFileInWebContainer();
-  }, [fileStructure, webContainer]);
 
   const toggleFolder = (path: string[]) => {
     const updateFolder = (
@@ -360,29 +300,13 @@ export default function Builder() {
       </nav>
       {/* Steps Sidebar */}
       <div className="grid grid-cols-7 pt-3 bg-zinc-900">
-        <div className="flex flex-col col-span-2 relative px-10">
-          <h2 className="text-xl font-bold mb-6 text-zinc-300">Build Steps</h2>
-          <div className="w-full overflow-y-scroll no-scrollbar">
-            <div className="flex-1 ">
-              <div className="space-y-3 h-[calc(100vh-450px)]">
-                {steps.map((step, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-zinc-800/50 border border-zinc-400/50"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-sm font-medium text-white flex-shrink-0">
-                      {index + 1}
-                    </div>
-                    <span className="text-sm text-gray-200">{step.title}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="w-full flex absolute bottom-0 left-0">
-            <PromptBox />
-          </div>
-        </div>
+
+        <StepsList
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={setCuurentSteps}
+        />
+
         {/* Main Content */}
         <div className="flex-1 flex flex-col col-span-5">
           {/* File Explorer and Preview */}
@@ -443,7 +367,7 @@ export default function Builder() {
                   </div>
                 ) : (
                   <div className="h-[calc(100vh-160px)] flex items-center justify-center bg-gray-850 border-[1px] border-zinc-700">
-                    <div className="text-center"></div>
+                    <PreviewFrame files={fileStructure} />
                   </div>
                 )}
               </div>
