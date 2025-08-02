@@ -2,17 +2,13 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { HeroiconsLink } from "../icons/HeroiconsLink";
-// import { UploadStatus } from "../lib/types";
 import axios from "axios";
 import Image from "next/image";
 import Star from "../icons/Star";
 import { usePrompt } from "../hooks/usePrompt";
 const PromptBox: React.FC = () => {
   const { inputPrompt, setInputPrompt } = usePrompt();
-
   const [files, setFiles] = useState<File[]>([]);
-  // const [status, setStatus] = useState<UploadStatus>("idle");
-  // const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -134,8 +130,8 @@ const PromptBox: React.FC = () => {
               required
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault(); // stop newline
-                  handleSubmit(e); // your custom submit handler
+                  e.preventDefault();
+                  handleSubmit(e);
                 }
               }}
             />

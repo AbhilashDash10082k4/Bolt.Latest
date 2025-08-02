@@ -8,9 +8,13 @@ export const POST = async (req: Request) => {
     if (!prompt) throw new Error("No prompt provided");
 
     const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "system", content: getSystemPrompt() }, ...prompt], //...prompt: {role: "user", content:""}...
-      model: "llama-3.3-70b-versatile",//llama-3.3-70b-versatile
-      temperature: 1,
+      messages: [
+        { role: "system", content: getSystemPrompt() }, 
+        ...prompt
+      ], 
+      //...prompt: {role: "user", content:""}...
+      model: "llama-3.1-8b-instant",//llama-3.3-70b-versatile
+      temperature: 0.7,
       max_completion_tokens: 8192,
       // "top_p": 1,
     });
