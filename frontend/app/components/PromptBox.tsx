@@ -104,7 +104,7 @@ const PromptBox: React.FC = () => {
       setLoading(false);
     }
   }
-
+  
   return (
     <form
       onSubmit={handleSubmit}

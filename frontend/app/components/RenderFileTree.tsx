@@ -30,15 +30,14 @@ export function RenderFileTree({
     ): FileOrFolder[] => {
       return items.map((item) => {
         if (item.type === "folder") {
-          if (currentPath.length === 1 && currentPath[0] === item.name) {
+          if (currentPath.length === 1 && currentPath[0] === item.folderName) {
             // This is the folder we want to toggle
             return { ...item, isOpen: !item.isOpen };
           } else if (
             currentPath.length > 1 &&
-            currentPath[0] === item.name &&
+            currentPath[0] === item.folderName &&
             item.children
           ) {
-            // We need to go deeper into the folder structure
             return {
               ...item,
               children: updateFolder(item.children, currentPath.slice(1)),
@@ -63,15 +62,15 @@ export function RenderFileTree({
     parentPath: string[] = []
   ) => {
     return items.map((item, index) => {
-      const currentPath = [...parentPath, item.name];
+      const currentPath = [...parentPath, item?.fileName];
       const indentLevel = depth * 16; // 16px per level
 
       return (
-        <div key={`${item.name}-${index}`} className="select-none">
+        <div key={`${item?.fileName}-${index}`} className="select-none">
           {item.type === "folder" ? (
             <div>
               <button
-                onClick={() => toggleFolder(currentPath)}
+                onClick={() => toggleFolder(currentPath as string[])}
                 className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded w-full text-left text-sm group transition-colors"
                 style={{ paddingLeft: `${8 + indentLevel}px` }}
               >
@@ -86,39 +85,39 @@ export function RenderFileTree({
                   <Folder className="w-4 h-4 text-blue-400 flex-shrink-0" />
                 )}
                 <span className="text-gray-200 group-hover:text-white truncate">
-                  {item.name}
+                  {item.folderName}
                 </span>
               </button>
               {item.isOpen && item.children && (
                 <div>
-                  {renderFileTree(item.children, depth + 1, currentPath)}
+                  {renderFileTree(item.children, depth + 1, currentPath as string[])}
                 </div>
               )}
             </div>
           ) : (
             <button
-              onClick={() => selectFile(item.name, item.content || "")}
+              onClick={() => selectFile(item.fileName as string, item.content || "")}
               className={`flex items-center gap-2 p-2 hover:bg-gray-700 rounded w-full text-left text-sm transition-colors ${
-                selectedFileName === item.name
+                selectedFileName === item?.fileName
                   ? "bg-gray-700 text-white"
                   : "text-gray-300"
               }`}
               style={{ paddingLeft: `${32 + indentLevel}px` }}
             >
-              {item.name.endsWith(".tsx") || item.name.endsWith(".ts") ? (
+              {item.fileName?.endsWith(".tsx") || item.fileName?.endsWith(".ts") ? (
                 <FileCode className="w-4 h-4 text-blue-400 flex-shrink-0" />
-              ) : item.name.endsWith(".json") ? (
+              ) : item.fileName?.endsWith(".json") ? (
                 <FileText className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-              ) : item.name.endsWith(".md") ? (
+              ) : item.fileName?.endsWith(".md") ? (
                 <FileText className="w-4 h-4 text-green-400 flex-shrink-0" />
-              ) : item.name.endsWith(".css") ? (
+              ) : item.fileName?.endsWith(".css") ? (
                 <FileText className="w-4 h-4 text-pink-400 flex-shrink-0" />
-              ) : item.name.endsWith(".html") ? (
+              ) : item.fileName?.endsWith(".html") ? (
                 <FileText className="w-4 h-4 text-orange-400 flex-shrink-0" />
               ) : (
                 <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
               )}
-              <span className="truncate">{item.name}</span>
+              <span className="truncate">{item.fileName}</span>
             </button>
           )}
         </div>
