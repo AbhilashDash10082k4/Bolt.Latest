@@ -32,7 +32,7 @@ export async function parseStepsToFileOrFolder({fileStructure, steps, setFileStr
             const file = currentFileStructure.find(
               (x) => x.path === currentFolder
             );
-            console.log("file from inside !parsedPath.lenth if loop ", file);
+            
             if (!file) {
               currentFileStructure.push({
                 fileName: currentFolderName,

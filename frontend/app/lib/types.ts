@@ -14,7 +14,9 @@
 // };
 // export type FileFolderSystem = File | Folder;
 export interface FileOrFolder {
-  name: string;
+  fileExtension?: string;
+  fileName?: string;
+  folderName?: string,
   type: "file" | "folder";
   content?: string;
   children?: FileOrFolder[];

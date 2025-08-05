@@ -67,7 +67,8 @@ export const POST = async (req: Request) => {
             - Google Fit/Apple Health integration
             - Stripe for premium subscriptions
 
-            Estimated Build Complexity: Medium-High"`,
+            Estimated Build Complexity: Medium-High"
+            The response SHOULD NOT have any excess new lines (\n) , '*' and hyphens. Keep it simple yet descriptive and give it in a single line.`,
         },
       ],
       model: "gemma2-9b-it", //gemma2-9b-it, llama-3.3-70b-versatile
