@@ -1,19 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react";
 import { WebContainer } from "@webcontainer/api";
+import { FileOrFolder } from "../../../lib/types";
+import { getWebContainer } from "./singletonWC";
 
-// interface TemplateFile {
-//     filename: string;
-//     fileExtension: string;
-//     content: string;
-// }
-// interface TemplateFolder {
-//     folderName: string;
-//     items: (TemplateFile | TemplateFolder)[];
-// }
-// interface UseWebContainerProps {
-//     templateData: TemplateFolder;
-// }
+
 interface UseWebContainerReturn {
     serverUrl: string | null;
     isLoading: boolean;
@@ -22,9 +12,12 @@ interface UseWebContainerReturn {
     writeFileSync: (path: string, content: string) => Promise<void>;
     destroy: () => void;
 }
-
-
-export function useWebContainers(): UseWebContainerReturn {
+let webContainerSingleton: WebContainer | null = null;
+interface PropTypes {
+    fileStructure: FileOrFolder[]
+}
+export function useWebContainers({ fileStructure }: PropTypes): UseWebContainerReturn {
+    console.log(fileStructure);
     const [instance, setInstance] = useState<WebContainer | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -35,10 +28,12 @@ export function useWebContainers(): UseWebContainerReturn {
         let mounted = true;
         const initializeWebContainer = async () => {
             try {
-                const webcontainerInstance = await WebContainer.boot();
+                if (!webContainerSingleton) {
+                    webContainerSingleton = await getWebContainer();
+                }
                 // instanceRef.current = webcontainerInstance;
                 if (!mounted) return;
-                setInstance(webcontainerInstance);
+                setInstance(webContainerSingleton);
                 setIsLoading(false);
             } catch (err) {
                 console.error("Failed to initialize WebContainer:", err);
@@ -53,42 +48,39 @@ export function useWebContainers(): UseWebContainerReturn {
 
         return () => {
             mounted = false;
-            if (instance) {
-                instance.teardown();
+            if (webContainerSingleton) {
+                webContainerSingleton.teardown();
             }
         };
     }, []);
     const writeFileSync = useCallback(async (path: string, content: string): Promise<void> => {
-        if (!instance) {
-            throw new Error('WebContainer instance is not available');
+        if (!webContainerSingleton) {
+            throw new Error('WebContainer webContainerSingleton is not available');
         }
-
         try {
             // Ensure the folder structure exists
             const pathParts = path.split('/');
             const folderPath = pathParts.slice(0, -1).join('/'); // Extract folder path
-
             if (folderPath) {
-                await instance.fs.mkdir(folderPath, { recursive: true }); // Create folder structure recursively
+                await webContainerSingleton?.fs.mkdir(folderPath, { recursive: true }); // Create folder structure recursively
             }
-
             // Write the file
-            await instance.fs.writeFile(path, content);
+            await webContainerSingleton?.fs.writeFile(path, content);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to write file';
             console.error(`Failed to write file at ${path}:`, err);
             throw new Error(`Failed to write file at ${path}: ${errorMessage}`);
         }
-    }, [instance]);
+    }, []);
 
     // Added destroy function
     const destroy = useCallback(() => {
-        if (instance) {
-            instance.teardown();
+        if (webContainerSingleton) {
+            webContainerSingleton.teardown();
             setInstance(null);
             setServerUrl(null);
         }
-    }, [instance]);
+    }, []);
 
-    return { serverUrl, isLoading, error, instance, writeFileSync, destroy };
+    return { serverUrl, isLoading, error, instance, destroy,writeFileSync };
 }

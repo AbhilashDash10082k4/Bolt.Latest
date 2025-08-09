@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import PromptBox from "./components/PromptBox";
 import Navbar from "./components/Navbar";
+import Background from "./components/ui/Background";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,21 +11,7 @@ const Home = () => {
   }, []);
   return (
     <div className="min-h-screen w-full bg-[#101010] overflow-hidden relative">
-       <div className="flex gap-[10rem] rotate-[-20deg] absolute top-[-40rem] right-[-30rem] z-[0] blur-[4rem] skew-[-40deg]  opacity-50">
-        <div className="w-[10rem] h-[20rem]  bg-linear-90 from-white to-blue-300"></div>
-        <div className="w-[10rem] h-[20rem]  bg-linear-90 from-white to-blue-300"></div>
-        <div className="w-[10rem] h-[20rem]  bg-linear-90 from-white to-blue-300"></div>
-      </div>
-      <div className="flex gap-[10rem] rotate-[-20deg] absolute top-[-50rem] right-[-50rem] z-[0] blur-[4rem] skew-[-40deg]  opacity-50">
-        <div className="w-[10rem] h-[20rem]  bg-linear-90 from-white to-blue-300"></div>
-        <div className="w-[10rem] h-[20rem]  bg-linear-90 from-white to-blue-300"></div>
-        <div className="w-[10rem] h-[20rem]  bg-linear-90 from-white to-blue-300"></div>
-      </div>
-      <div className="flex gap-[10rem] rotate-[-20deg] absolute top-[-60rem] right-[-60rem] z-[0] blur-[4rem] skew-[-40deg]  opacity-50">
-        <div className="w-[10rem] h-[30rem]  bg-linear-90 from-white to-blue-300"></div>
-        <div className="w-[10rem] h-[30rem]  bg-linear-90 from-white to-blue-300"></div>
-        <div className="w-[10rem] h-[30rem]  bg-linear-90 from-white to-blue-300"></div>
-      </div>
+       <Background/>
       {/* <nav className="text-2xl text-white w-screen  pt-10 pl-7 pr-7 font-bold font-mono flex justify-between">
         <div className="">AI SDE</div>
         <div className="flex gap-20">
@@ -47,8 +34,8 @@ const Home = () => {
                 AI Website Builder
               </h1>
             </span>
-            <span className="text-xl font-thin text-zinc-500 pt-2 block align-middle ">
-              Turn your ideas into reality by chatting
+            <span className="text-md font-thin text-zinc-500 pt-2 block align-middle ">
+              Turn your ideas into reality with a single prompt!
             </span>
           </div>
           <PromptBox />

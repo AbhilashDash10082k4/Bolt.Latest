@@ -1,55 +1,58 @@
- import { FileOrFolder } from "../../../lib/types";
+import { FileOrFolder } from "../../../lib/types";
 
-interface WebContainerFile {
+export interface WebContainerFile {
   file: {
     contents: string;
   };
 }
 
-interface WebContainerDirectory {
+export interface WebContainerDirectory {
   directory: {
     [key: string]: WebContainerFile | WebContainerDirectory;
   };
 }
-
-type WebContainerFileSystem = Record<string, WebContainerFile | WebContainerDirectory>;
+/*
+{fileName: 'package-lock.json', type: 'file', path: '/package-lock.json', content: '{\n  "name": "vite_app",\n  "version": "0.0.0",\n  "l….1",\n        "vite": "^7.0.4"\n      }\n    }\n  }\n}'}
+5
+// {fileName: 'main.d.ts', type: 'file', path: '/src/main.d.ts', content: "declare module 'react';\n    declare module 'react-dom';\n    declare module 'lucide-react';"} */
+export type WebContainerFileSystem = Record<string, WebContainerFile | WebContainerDirectory>;
 export const createMountStructure = (
   files: FileOrFolder[] 
 ): WebContainerFileSystem  => {
- function processItem(item: FileOrFolder): WebContainerFile | WebContainerDirectory  {
-    if (item.folderName && item.children) {
-      // This is a directory
-      const directoryContents: WebContainerFileSystem = {};
-      
-      item.children?.forEach(subItem => {
-        const key = subItem?.fileExtension 
-          ? `${subItem.fileName}.${subItem.fileExtension}`
-          : subItem.folderName!;
-        directoryContents[key] = processItem(subItem);
-      });
+ const root: WebContainerFileSystem = {};
 
-      return {
-        directory: directoryContents
-      };
-    } else {
-      // This is a file
-      return {
-        file: {
-          contents: item.content as string
+  for (const file of files) {
+    const parts = file.path.split("/").filter((part): part is string  => !!part); //filters out empty string
+    let current: WebContainerFileSystem = root;
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+
+      const isLast = i === parts.length - 1;
+
+      if (isLast && file.type === "file") {
+        current[part] = {
+          file: {
+            contents: file.content || "",
+          },
+        };
+      } else {
+        if (!current[part]) {
+          current[part] = {
+            directory: {},
+          };
         }
-      };
+
+        const entry = current[part];
+        if ("directory" in entry) {
+          current = entry.directory;
+        } else {
+          throw new Error(`Expected directory at ${part}, but found a file.`);
+        }
+      }
     }
   }
-   const result: WebContainerFileSystem = {};
-  
-  files?.forEach(item => {
-    const key = item.fileExtension 
-      ? `${item.fileName}.${item.fileExtension}`
-      : item.folderName!;
-    result[key] = processItem(item);
-  });
-
-  return result;
+  return root;
 };
 
 //   const mountStructure: Record<string, any> = {};
