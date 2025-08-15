@@ -124,7 +124,7 @@ const PromptBox: React.FC = () => {
           <div className="relative h-full w-full p-4 bg-[#171717] rounded-lg text-stone-300 placeholder-white/50 outline-none resize-none  tracking-normal border-[1px] border-zinc-500 ">
             <textarea
               value={inputPrompt}
-              onChange={(e) => setInputPrompt(e.target.value)}
+              onChange={(e) => setInputPrompt(e.target.value)}  
               placeholder="Describe your website"
               className="h-4/5 w-full pt-2 outline-none no-scrollbar"
               required

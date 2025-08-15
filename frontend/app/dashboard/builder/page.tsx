@@ -25,9 +25,11 @@ export default function Builder() {
   const promptQuery = searchParams.get("prompt") as string;
   const fileStructureRef = useRef<FileOrFolder[]>([]);
 
+  //prevents re render and putting fileStructure in otehr useEffects to prevent re renders
   useEffect(() => {
     fileStructureRef.current = fileStructure;
   }, [fileStructure]);
+
   useEffect(() => {
     if (!promptQuery?.trim()) return;
     backendCall({ promptQuery, setSteps });
@@ -103,8 +105,8 @@ export default function Builder() {
                     />
                   </div>
                 </div>
-                <div className={activeTab === "preview" ? "block" : "hidden"}>
-                  <div className="h-[calc(100vh-160px)] flex items-center justify-center bg-gray-850 border-[1px] border-zinc-700">
+                <div className={activeTab === "preview" ? "flex-1 flex" : "hidden"}>
+                  <div className="h-[calc(100vh-160px)] flex flex-1 bg-gray-850 border-[1px] border-zinc-700">
                     <PreviewFrameee
                       filesFromBackend={fileStructure}
                       webContainerInstance={instance}
