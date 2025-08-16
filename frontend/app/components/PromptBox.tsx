@@ -1,25 +1,38 @@
 "use client";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { HeroiconsLink } from "../icons/HeroiconsLink";
 import axios from "axios";
 import Image from "next/image";
 import Star from "../icons/Star";
 import { usePrompt } from "../hooks/usePrompt";
+import { samplePrompts } from "../lib/default/samplePrompts";
 const PromptBox: React.FC = () => {
   const { inputPrompt, setInputPrompt } = usePrompt();
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
+  const [showBtn, setShowBtn] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (inputPrompt.trim().length > 0) {
+      const timer = setTimeout(() => setShowBtn(true), 300);
+      setIsVisible(true);
+      return () => clearTimeout(timer);
+    } else {
+      setShowBtn(false);
+    }
+    // setShowBtn(inputPrompt.trim().length > 0);
+  }, [inputPrompt]);
 
   const handleAttach = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files) {
       const file = Array.from(e.target.files || []);
-      console.log("🔥 File input triggered");
+      console.log("File input triggered");
 
       if (!file) return;
       console.log("📦 Selected File:", file);
@@ -46,11 +59,11 @@ const PromptBox: React.FC = () => {
     e.preventDefault();
     if (!inputPrompt.trim()) return;
     setInputPrompt(inputPrompt);
-    
+
     // const response = await axios.post('/api/storePrompt', {
     //   storeThisPrompt: inputPrompt
     // })
-    
+
     // const promptId = response.data.id
     router.push(`/dashboard/builder?prompt=${inputPrompt}`);
 
@@ -104,7 +117,7 @@ const PromptBox: React.FC = () => {
       setLoading(false);
     }
   }
-  
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -112,7 +125,7 @@ const PromptBox: React.FC = () => {
       className="w-full text-xl mr-5 "
     >
       <div className="py-7 px-10 h-[100%] w-full mx-auto max-w-4xl items-center flex flex-col">
-        <div className="relative w-full min-w-max h-52 rounded-lg overflow-hidden shadow-gray-800 shadow-xl">
+        <div className="relative w-full min-w-max min-h-[13rem] rounded-lg overflow-hidden shadow-gray-800 shadow-xl">
           {/* Textarea */}
           {loading && (
             <div className="absolute inset-0 z-10 bg-[#171717]/70 backdrop-blur-sm flex items-center justify-center rounded-lg">
@@ -121,12 +134,12 @@ const PromptBox: React.FC = () => {
               </span>
             </div>
           )}
-          <div className="relative h-full w-full p-4 bg-[#171717] rounded-lg text-stone-300 placeholder-white/50 outline-none resize-none  tracking-normal border-[1px] border-zinc-500 ">
+          <div className="relative h-full w-full min-h-[13rem] p-4 bg-[#171717] rounded-lg text-stone-300 placeholder-white/50 outline-none resize-none  tracking-normal border-[1px] border-zinc-500 ">
             <textarea
               value={inputPrompt}
-              onChange={(e) => setInputPrompt(e.target.value)}  
+              onChange={(e) => setInputPrompt(e.target.value)}
               placeholder="Describe your website"
-              className="h-4/5 w-full pt-2 outline-none no-scrollbar"
+              className="h-full w-full pt-2 text-[18px] outline-none no-scrollbar"
               required
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -135,6 +148,34 @@ const PromptBox: React.FC = () => {
                 }
               }}
             />
+            {isVisible && (
+              <button
+                type="submit"
+                className={`absolute bottom-3 right-3 flex items-center justify-center
+      w-10 h-10 rounded-full bg-cyan-600 text-white 
+      hover:bg-cyan-600  shadow-md hover:cursor-pointer  transition-all duration-300 ease-out
+      transform ${
+        showBtn
+          ? "translate-y-0 opacity-100 scale-100"
+          : "translate-y-8 opacity-0 scale-90"
+      }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 12h14M12 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
           <div className="absolute bottom-3 left-3 flex items-center gap-2 hover:cursor-pointer">
             <div className="">
@@ -149,7 +190,7 @@ const PromptBox: React.FC = () => {
               <label
                 htmlFor="file-upload"
                 onClick={handleClick}
-                className="cursor-pointer flex items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-white/80 hover:bg-zinc-700"
+                className="cursor-pointer flex items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700"
               >
                 <HeroiconsLink />
                 <span className="leading-normal">Attach</span>
@@ -162,7 +203,7 @@ const PromptBox: React.FC = () => {
                 enhancePrompt();
               }}
             >
-              <div className="flex cursor-pointer items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-white/80 hover:bg-zinc-700">
+              <div className="flex cursor-pointer items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700">
                 <Star />
                 <span>Enhance</span>
               </div>
@@ -201,6 +242,46 @@ const PromptBox: React.FC = () => {
                     />
                   </svg>
                 </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="w-full max-w-3xl mx-auto mt-5">
+        {/* First row with 3 chips */}
+        <div className="grid grid-cols-3 gap-2">
+          {samplePrompts.slice(0, 3).map((prompt, idx) => (
+            <button
+              key={idx}
+              type="button"
+              className="px-3 py-1 rounded-lg bg-zinc-800 text-zinc-400 text-sm 
+                   hover:cursor-pointer hover:bg-zinc-700 hover:text-white 
+                   transition-all duration-200 shadow overflow-hidden 
+                   text-ellipsis whitespace-nowrap"
+              style={{ maxWidth: "100%" }}
+              onClick={() => setInputPrompt(prompt)}
+              title={prompt}
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+        <div className="grid grid-cols-6 gap-2 mt-3">
+          {samplePrompts.slice(3, 5).map((prompt, idx) => (
+            <div key={idx} className={idx == 0 ? "col-start-2 col-end-4": "col-start-4 col-end-6" }>
+              <div className="flex">
+                <button
+                type="button"
+                className="px-3 py-1 rounded-lg bg-zinc-800 text-zinc-400 text-sm 
+                   hover:cursor-pointer hover:bg-zinc-700 hover:text-white 
+                   transition-all duration-200 shadow overflow-hidden 
+                   text-ellipsis whitespace-nowrap"
+                style={{ maxWidth: "100%" }}
+                onClick={() => setInputPrompt(prompt)}
+                title={prompt}
+              >
+                {prompt}
+              </button>
               </div>
             </div>
           ))}

@@ -10,20 +10,13 @@ const Home = () => {
     setIsVisible(true);
   }, []);
   return (
-    <div className="min-h-screen w-full bg-[#101010] overflow-hidden relative">
-       <Background/>
-      {/* <nav className="text-2xl text-white w-screen  pt-10 pl-7 pr-7 font-bold font-mono flex justify-between">
-        <div className="">AI SDE</div>
-        <div className="flex gap-20">
-          <div>Login</div>
-          <div>Sign Up</div>
-        </div>
-      </nav> */}
-      <Navbar/>
-      <div className="flex justify-center items-center mt-10 w-full h-[calc(100vh-5rem)] px-4">
+    <div className="min-h-screen w-full bg-[#101010] overflow-hidden relative flex flex-col">
+      <Background />
+      <Navbar />
+      <div className="flex-1 flex flex-col justify-center items-center px-4 pt-16 md:pt-24">
         <div className="w-full max-w-7xl px-4">
           <div
-            className={`h-min w-full flex flex-col text-center  mx-auto transition-all duration-600 ${
+            className={`h-min w-full flex flex-col text-center mx-auto transition-all duration-600 ${
               isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-10"
