@@ -5,10 +5,11 @@ import { HeroiconsLink } from "../icons/HeroiconsLink";
 import axios from "axios";
 import Image from "next/image";
 import Star from "../icons/Star";
-import { usePrompt } from "../hooks/usePrompt";
-import { Chips } from "./Chips";
-const PromptBox: React.FC = () => {
-  const { inputPrompt, setInputPrompt } = usePrompt();
+interface Prop {
+    setInputPrompt: React.Dispatch<React.SetStateAction<string>>,
+    inputPrompt: string
+}
+const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string[]>([]);
@@ -139,7 +140,7 @@ const PromptBox: React.FC = () => {
               value={inputPrompt}
               onChange={(e) => setInputPrompt(e.target.value)}
               placeholder="Describe your website"
-              className="h-full w-full pt-2 text-[18px] outline-none no-scrollbar"
+              className="h-full w-full pt-2 text-[18px] outline-none no-scrollbar resize-none"
               required
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -151,8 +152,8 @@ const PromptBox: React.FC = () => {
             {isVisible && (
               <button
                 type="submit"
-                className={`absolute bottom-3 right-3 flex items-center justify-center
-      w-10 h-10 rounded-full bg-cyan-600 text-white 
+                className={`absolute top-7 right-3 flex items-center justify-center
+      w-10 h-10 rounded-xl bg-cyan-400 text-white 
       hover:bg-cyan-600  shadow-md hover:cursor-pointer  transition-all duration-300 ease-out
       transform ${
         showBtn
@@ -247,7 +248,6 @@ const PromptBox: React.FC = () => {
           ))}
         </div>
       </div>
-      <Chips setInputPrompt={setInputPrompt}/>
     </form>
   );
 };

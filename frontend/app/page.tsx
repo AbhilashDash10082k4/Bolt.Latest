@@ -3,16 +3,19 @@ import { useEffect, useState } from "react";
 import PromptBox from "./components/PromptBox";
 import Background from "./components/ui/Background";
 import NewNavBar from "./components/NewNavBar";
+import { Chips } from "./components/Chips";
+import { usePrompt } from "./hooks/usePrompt";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const {inputPrompt, setInputPrompt} = usePrompt();
   useEffect(() => {
     setIsVisible(true);
   }, []);
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-black via-zinc-950 to-zinc-900 overflow-hidden relative flex flex-col">
       <NewNavBar />
-      <Background/>
+      <Background />
 
       <div className="flex-1 flex flex-col justify-center items-center px-4 pt-16 md:pt-24">
         <div className="w-full max-w-7xl px-4">
@@ -32,7 +35,8 @@ const Home = () => {
               Turn your ideas into reality with a single prompt!
             </span>
           </div>
-          <PromptBox />
+          <PromptBox inputPrompt={inputPrompt} setInputPrompt={setInputPrompt}/>
+          <Chips setInputPrompt={setInputPrompt} />
         </div>
       </div>
     </div>
