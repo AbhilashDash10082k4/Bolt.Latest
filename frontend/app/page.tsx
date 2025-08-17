@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import PromptBox from "./components/PromptBox";
-import Navbar from "./components/Navbar";
 import Background from "./components/ui/Background";
+import NewNavBar from "./components/NewNavBar";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,9 +10,10 @@ const Home = () => {
     setIsVisible(true);
   }, []);
   return (
-    <div className="min-h-screen w-full bg-[#101010] overflow-hidden relative flex flex-col">
-      <Background />
-      <Navbar />
+    <div className="min-h-screen w-full bg-gradient-to-br from-black via-zinc-950 to-zinc-900 overflow-hidden relative flex flex-col">
+      <NewNavBar />
+      <Background/>
+
       <div className="flex-1 flex flex-col justify-center items-center px-4 pt-16 md:pt-24">
         <div className="w-full max-w-7xl px-4">
           <div
