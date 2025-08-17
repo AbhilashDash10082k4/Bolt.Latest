@@ -135,12 +135,12 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
               </span>
             </div>
           )}
-          <div className="relative h-full w-full min-h-[13rem] p-4 bg-[#171717] rounded-lg text-stone-300 placeholder-white/50 outline-none resize-none  tracking-normal border-[1px] border-zinc-500 ">
+          <div className=" flex flex-col relative h-full w-full min-h-[13rem] p-4 bg-[#171717] rounded-lg text-stone-300 placeholder-white/50 outline-none resize-none  tracking-normal border-[1px] border-zinc-500 ">
             <textarea
               value={inputPrompt}
               onChange={(e) => setInputPrompt(e.target.value)}
               placeholder="Describe your website"
-              className="h-full w-full pt-2 text-[18px] outline-none no-scrollbar resize-none"
+              className="flex-1 w-full pt-2 text-[18px] outline-none no-scrollbar resize-none bg-transparent"
               required
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -149,17 +149,47 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
                 }
               }}
             />
+            <div className="flex items-center gap-2 mt-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleAttach}
+                accept="image/*,.txt"
+              />
+              <label
+                htmlFor="file-upload"
+                onClick={handleClick}
+                className="cursor-pointer flex items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700"
+              >
+                <HeroiconsLink />
+                <span className="leading-normal">Attach</span>
+              </label>
+              <button
+                type="button"
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  enhancePrompt();
+                }}
+              >
+                <div className="flex cursor-pointer items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700">
+                  <Star />
+                  <span>Enhance</span>
+                </div>
+              </button>
+            </div>
             {isVisible && (
               <button
                 type="submit"
                 className={`absolute top-7 right-3 flex items-center justify-center
-      w-10 h-10 rounded-xl bg-cyan-400 text-white 
-      hover:bg-cyan-600  shadow-md hover:cursor-pointer  transition-all duration-300 ease-out
-      transform ${
-        showBtn
-          ? "translate-y-0 opacity-100 scale-100"
-          : "translate-y-8 opacity-0 scale-90"
-      }`}
+          w-10 h-10 rounded-xl bg-cyan-400 text-white 
+          hover:bg-cyan-600 shadow-md hover:cursor-pointer transition-all duration-300 ease-out
+          transform ${
+            showBtn
+              ? "translate-y-0 opacity-100 scale-100"
+              : "translate-y-8 opacity-0 scale-90"
+          }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -178,40 +208,7 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
               </button>
             )}
           </div>
-          <div className="absolute bottom-3 left-3 flex items-center gap-2 hover:cursor-pointer">
-            <div className="">
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                className="hidden"
-                onChange={handleAttach}
-                accept="image/*,.txt"
-              ></input>
-              <label
-                htmlFor="file-upload"
-                onClick={handleClick}
-                className="cursor-pointer flex items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700"
-              >
-                <HeroiconsLink />
-                <span className="leading-normal">Attach</span>
-              </label>
-            </div>
-            <button
-              type="button"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                enhancePrompt();
-              }}
-            >
-              <div className="flex cursor-pointer items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700">
-                <Star />
-                <span>Enhance</span>
-              </div>
-            </button>
-          </div>
         </div>
-        {/*Multiple image rendering */}
         <div className="flex">
           {previewUrl.map((item, index) => (
             <div
