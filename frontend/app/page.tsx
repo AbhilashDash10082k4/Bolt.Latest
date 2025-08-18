@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import PromptBox from "./components/PromptBox";
 import Background from "./components/ui/Background";
 import NewNavBar from "./components/NewNavBar";
-import { Chips } from "./components/Chips";
-import { usePrompt } from "./hooks/usePrompt";
+import Chips from "./components/Chips";
+import React from "react";
+import { useUserPrompt } from "./context/FormProvider";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const {inputPrompt, setInputPrompt} = usePrompt();
+const {inputPrompt, setInputPrompt} = useUserPrompt();
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -16,7 +17,6 @@ const Home = () => {
     <div className="min-h-screen w-full bg-gradient-to-br from-black via-zinc-950 to-zinc-900 overflow-hidden relative flex flex-col">
       <NewNavBar />
       <Background />
-
       <div className="flex-1 flex flex-col justify-center items-center px-4 pt-16 md:pt-24">
         <div className="w-full max-w-7xl px-4">
           <div
@@ -28,13 +28,15 @@ const Home = () => {
           >
             <span className="text-6xl font-bold ">
               <h1 className="bg-gradient-to-r from-zinc-500 via-zinc-400 to-zinc-300 inline-block text-transparent bg-clip-text">
-                AI Website Builder
+                What&apos;s on your mind today?
               </h1>
             </span>
             <span className="text-md font-thin text-zinc-500 pt-2 block align-middle ">
               Turn your ideas into reality with a single prompt!
             </span>
           </div>
+          {/* <FormProvider>
+          </FormProvider> */}
           <PromptBox inputPrompt={inputPrompt} setInputPrompt={setInputPrompt}/>
           <Chips setInputPrompt={setInputPrompt} />
         </div>
@@ -42,5 +44,4 @@ const Home = () => {
     </div>
   );
 };
-
-export default Home;
+export default React.memo(Home);

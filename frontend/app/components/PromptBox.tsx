@@ -1,15 +1,14 @@
 "use client";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { HeroiconsLink } from "../icons/HeroiconsLink";
 import axios from "axios";
 import Image from "next/image";
-import Star from "../icons/Star";
+import AttachEnhanceBtn from "./AttachEnhanceBtn";
 interface Prop {
-    setInputPrompt: React.Dispatch<React.SetStateAction<string>>,
-    inputPrompt: string
+  setInputPrompt: React.Dispatch<React.SetStateAction<string>>;
+  inputPrompt: string;
 }
-const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
+const PromptBox = ({ setInputPrompt, inputPrompt }: Prop) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string[]>([]);
@@ -17,6 +16,12 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
   const router = useRouter();
   const [showBtn, setShowBtn] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  const handleAttachRef = useRef<
+    (e: React.ChangeEvent<HTMLInputElement>) => void
+  >(() => {});
+  const handleClickRef = useRef<() => void>(() => {});
+  const enhancePromptRef = useRef<() => Promise<void>>(async () => {});
 
   useEffect(() => {
     if (inputPrompt.trim().length > 0) {
@@ -29,7 +34,7 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
     // setShowBtn(inputPrompt.trim().length > 0);
   }, [inputPrompt]);
 
-  const handleAttach = (e: ChangeEvent<HTMLInputElement>) => {
+  handleAttachRef.current = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files) {
       const file = Array.from(e.target.files || []);
@@ -52,7 +57,7 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
     }
   };
 
-  const handleClick = () => {
+  handleClickRef.current = () => {
     fileInputRef.current?.click();
   };
 
@@ -103,7 +108,7 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
     }
   };
 
-  async function enhancePrompt() {
+  enhancePromptRef.current = async () => {
     try {
       setLoading(true);
       const response = await axios.post("/api/enhance", {
@@ -117,7 +122,7 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <form
@@ -149,36 +154,12 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
                 }
               }}
             />
-            <div className="flex items-center gap-2 mt-4">
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                className="hidden"
-                onChange={handleAttach}
-                accept="image/*,.txt"
-              />
-              <label
-                htmlFor="file-upload"
-                onClick={handleClick}
-                className="cursor-pointer flex items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700"
-              >
-                <HeroiconsLink />
-                <span className="leading-normal">Attach</span>
-              </label>
-              <button
-                type="button"
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.preventDefault();
-                  enhancePrompt();
-                }}
-              >
-                <div className="flex cursor-pointer items-center gap-1 px-4 py-2 rounded-full bg-zinc-800 text-sm text-zinc-300 hover:bg-zinc-700">
-                  <Star />
-                  <span>Enhance</span>
-                </div>
-              </button>
-            </div>
+            <AttachEnhanceBtn
+              fileInputRef={fileInputRef}
+              handleAttach={handleAttachRef}
+              handleClick={handleClickRef}
+              enhancePrompt={enhancePromptRef}
+            />
             {isVisible && (
               <button
                 type="submit"
@@ -248,4 +229,4 @@ const PromptBox = ({inputPrompt, setInputPrompt}:Prop) => {
     </form>
   );
 };
-export default PromptBox;
+export default React.memo(PromptBox);
