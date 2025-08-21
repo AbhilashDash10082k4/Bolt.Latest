@@ -8,15 +8,18 @@ import { StepsList } from "../../components/StepList";
 import { RenderFileTree } from "../../components/RenderFileTree";
 import dynamic from "next/dynamic";
 const PreviewFrameee = dynamic(
-  () => import("../../features/webcontainers/components/PreviewFrameee"),
+  () => import("../../features/webcontainers/components/PreviewFrame"),
   {
     ssr: false,
   }
 );
+
 import { useWebContainers } from "../../features/webcontainers/hooks/useWebContainers";
 import { backendCall } from "../../lib/backendCall";
 import { parseStepsToFileOrFolder } from "../../lib/parseStepsToFileOrFolder";
-export default function Builder() {
+import FileTreeLoader from "../../components/FileTreeLoader";
+// import StreamingStepsLoader from "../../components/StepsLoader";
+export default function Page() {
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
   const [steps, setSteps] = useState<Step[]>([]);
   const [currentStep, setCurentSteps] = useState(1);
@@ -45,30 +48,24 @@ export default function Builder() {
     });
   }, [steps]);
 
-  const {  isLoading, error, instance,writeFileSync }=
-    useWebContainers({ fileStructure });
+  const { isLoading, error, instance, writeFileSync } = useWebContainers();
   return (
     <div className="min-h-screen bg-zinc-900 text-white w-full">
-      <nav className="text-2xl text-white w-full p-4 font-bold border-b-[1px] border-zinc-700 flex justify-between">
-        <div className="">AI SDE</div>
-        <div className="flex gap-20">
-          <div>Login</div>
-          <div>Sign Up</div>
-        </div>
-      </nav>
       {/* Steps Sidebar */}
       <div className="grid grid-cols-7 pt-3 bg-zinc-900">
-        <StepsList
-          steps={steps}
-          currentStep={currentStep}
-          onStepClick={setCurentSteps}
-        />
-        {/* Main Content */}
+        {/* {steps.length === 0 ? (
+          <div className="">
+            <StreamingStepsLoader />
+          </div>
+        ) : ( */}
+          <StepsList
+            steps={steps}
+            currentStep={currentStep}
+            onStepClick={setCurentSteps}
+          />
+        
         <div className="flex-1 flex flex-col col-span-5">
-          {/* File Explorer and Preview */}
           <div className="flex-1 flex">
-            {/* File Explorer */}
-            {/* Code/Preview Area */}
             <div className="flex-1 flex flex-col">
               <div className="border-[1px] border-zinc-700 px-4 bg-zinc-900 ">
                 <div className="flex gap-6 ">
@@ -99,13 +96,19 @@ export default function Builder() {
               <div className="flex-1 ">
                 <div className={activeTab === "code" ? "block" : "hidden"}>
                   <div className="flex flex-col flex-1 h-[calc(100vh-160px)] min-h-0">
-                    <RenderFileTree
-                      fileStructure={fileStructure}
-                      setFileStructure={setFileStructure}
-                    />
+                    {fileStructure.length == 0 ? (
+                      <FileTreeLoader />
+                    ) : (
+                      <RenderFileTree
+                        fileStructure={fileStructure}
+                        setFileStructure={setFileStructure}
+                      />
+                    )}
                   </div>
                 </div>
-                <div className={activeTab === "preview" ? "flex-1 flex" : "hidden"}>
+                <div
+                  className={activeTab === "preview" ? "flex-1 flex" : "hidden"}
+                >
                   <div className="h-[calc(100vh-160px)] flex flex-1 bg-gray-850 border-[1px] border-zinc-700">
                     <PreviewFrameee
                       filesFromBackend={fileStructure}
@@ -113,7 +116,6 @@ export default function Builder() {
                       error={error}
                       writeFileSync={writeFileSync}
                       isLoading={isLoading}
-                      // serverUrl={serverUrl as string}
                       forceResetup={false}
                     />
                   </div>

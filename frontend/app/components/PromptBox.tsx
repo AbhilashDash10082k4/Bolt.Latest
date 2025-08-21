@@ -24,7 +24,7 @@ const PromptBox = ({ setInputPrompt, inputPrompt }: Prop) => {
   const enhancePromptRef = useRef<() => Promise<void>>(async () => {});
 
   useEffect(() => {
-    if (inputPrompt.trim().length > 0) {
+    if (inputPrompt?.trim().length > 0) {
       const timer = setTimeout(() => setShowBtn(true), 300);
       setIsVisible(true);
       return () => clearTimeout(timer);
