@@ -7,7 +7,7 @@ type StreamingStepsLoaderProps = {
 };
 
 export default function StreamingStepsLoader({
-  count = 6,
+  count = 10,
   streamInterval = 220,
   startShown = 0,
 }: StreamingStepsLoaderProps) {
@@ -37,18 +37,30 @@ export default function StreamingStepsLoader({
   return (
     <div className="w-full overflow-y-scroll no-scrollbar">
       <div className="flex-1">
-        <div className="space-y-3 h-[calc(100vh-370px)] p-2">
+        <div className="space-y-3 h-[calc(100vh-300px)] p-2">
           {Array.from({ length: count }).map((_, i) => {
             const isShown = i < visible;
             return (
               <div
                 key={i}
-                className={`p-1 rounded-lg transition-all duration-300 ease-out transform ` +
-                  `${isShown ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
+                className={
+                  `p-1 rounded-lg transition-all duration-300 ease-out transform ` +
+                  `${
+                    isShown
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 -translate-y-2"
+                  }`
+                }
               >
                 <div
-                  className={`flex items-center gap-2 p-2 rounded ` +
-                    `${isShown ? "bg-zinc-800 border border-zinc-700" : "bg-transparent"}`}
+                  className={
+                    `flex items-center gap-2 p-2 rounded ` +
+                    `${
+                      isShown
+                        ? "bg-zinc-800 border border-zinc-700"
+                        : "bg-transparent"
+                    }`
+                  }
                 >
                   {/* icon skeleton */}
                   <div
@@ -60,7 +72,9 @@ export default function StreamingStepsLoader({
                   {/* title skeleton */}
                   <div className="flex-1">
                     <div
-                      className={`h-4 rounded ${isShown ? "animate-pulse bg-zinc-700" : "bg-transparent"}`}
+                      className={`h-4 rounded ${
+                        isShown ? "animate-pulse bg-zinc-700" : "bg-transparent"
+                      }`}
                       style={{ width: isShown ? widthFor(i) : "0%" }}
                     />
                   </div>

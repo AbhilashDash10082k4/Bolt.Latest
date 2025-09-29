@@ -1,11 +1,21 @@
 import Link from "next/link";
+// import { Geist, Geist_Mono } from "next/font/google";
+// import "../global.css";
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
 
-export default function layout({children}: {children:React.ReactNode}) {
-    return (
-      <>
-        <nav className="text-xl text-white w-full p-4 bg-zinc-900 font-bold border-b-[1px] border-zinc-700 flex justify-between">
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
+export default function layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="h-screen flex flex-col bg-zinc-900 text-white">
+      <nav className="w-full p-4 bg-zinc-900 font-bold border-b border-zinc-700 flex justify-between">
         <Link href="/" className="flex items-center">
-          <span className="text-2xl font-bold bg-gradient-to-r from-zinc-400 via-zinc-100 to-white bg-clip-text text-transparent drop-shadow-md">
+          <span className="text-2xl font-bold text-white drop-shadow-lg">
             ThunderBolt
           </span>
         </Link>
@@ -46,7 +56,7 @@ export default function layout({children}: {children:React.ReactNode}) {
           </button>
         </div>
       </nav>
-      {children}
-      </>
-    )
+      <div className="flex-1 min-h-0 bg-zinc-900">{children}</div>
+    </div>
+  );
 }

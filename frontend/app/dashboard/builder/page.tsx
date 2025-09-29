@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Code2, Play } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { FileOrFolder, Step } from "../../lib/types";
-import { StepsList } from "../../components/StepList";
-import { RenderFileTree } from "../../components/RenderFileTree";
+import { StepsList } from "../../components/BuilderComps/StepList";
+import { RenderFileTree } from "../../components/BuilderComps/RenderFileTree/FileTreeClient"; 
 import dynamic from "next/dynamic";
 const PreviewFrameee = dynamic(
   () => import("../../features/webcontainers/components/PreviewFrame"),
@@ -17,8 +17,6 @@ const PreviewFrameee = dynamic(
 import { useWebContainers } from "../../features/webcontainers/hooks/useWebContainers";
 import { backendCall } from "../../lib/backendCall";
 import { parseStepsToFileOrFolder } from "../../lib/parseStepsToFileOrFolder";
-import FileTreeLoader from "../../components/FileTreeLoader";
-// import StreamingStepsLoader from "../../components/StepsLoader";
 export default function Page() {
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
   const [steps, setSteps] = useState<Step[]>([]);
@@ -33,10 +31,10 @@ export default function Page() {
     fileStructureRef.current = fileStructure;
   }, [fileStructure]);
 
-  useEffect(() => {
-    if (!promptQuery?.trim()) return;
-    backendCall({ promptQuery, setSteps });
-  }, [promptQuery]);
+  // useEffect(() => {
+  //   if (!promptQuery?.trim()) return;
+  //   backendCall({ promptQuery, setSteps });
+  // }, [promptQuery]);
 
   useEffect(() => {
     if (steps.length == 0) return;
@@ -46,27 +44,21 @@ export default function Page() {
       setSteps,
       setFileStructure,
     });
+    console.log("fileStructureRef inside the useEffect", fileStructureRef);
   }, [steps]);
 
   const { isLoading, error, instance, writeFileSync } = useWebContainers();
   return (
-    <div className="min-h-screen bg-zinc-900 text-white w-full">
-      {/* Steps Sidebar */}
-      <div className="grid grid-cols-7 pt-3 bg-zinc-900">
-        {/* {steps.length === 0 ? (
-          <div className="">
-            <StreamingStepsLoader />
-          </div>
-        ) : ( */}
-          <StepsList
-            steps={steps}
-            currentStep={currentStep}
-            onStepClick={setCurentSteps}
-          />
+    <div className="h-full  bg-zinc-900 text-white w-full">
+      <div className="grid grid-cols-7 pt-3 bg-zinc-900 w-full h-full min-h-0"> 
+        <StepsList
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={setCurentSteps}
+        />
+
         
-        <div className="flex-1 flex flex-col col-span-5">
-          <div className="flex-1 flex">
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col col-span-5 min-h-0">
               <div className="border-[1px] border-zinc-700 px-4 bg-zinc-900 ">
                 <div className="flex gap-6 ">
                   <button
@@ -93,17 +85,13 @@ export default function Page() {
                   </button>
                 </div>
               </div>
-              <div className="flex-1 ">
+              <div className="flex-1 min-h-0 relative">
                 <div className={activeTab === "code" ? "block" : "hidden"}>
                   <div className="flex flex-col flex-1 h-[calc(100vh-160px)] min-h-0">
-                    {fileStructure.length == 0 ? (
-                      <FileTreeLoader />
-                    ) : (
-                      <RenderFileTree
-                        fileStructure={fileStructure}
-                        setFileStructure={setFileStructure}
-                      />
-                    )}
+                    <RenderFileTree
+                      fileStructure={fileStructure}
+                      setFileStructure={setFileStructure}
+                    />
                   </div>
                 </div>
                 <div
@@ -124,7 +112,6 @@ export default function Page() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      
   );
 }
